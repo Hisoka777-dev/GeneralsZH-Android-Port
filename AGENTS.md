@@ -89,11 +89,16 @@ Work and push on the diagnostics branch (`claude/network-diagnostics`), never di
 repository owner says so.
 
 If `GITVERSE_TOKEN` and `GITVERSE_REPO` are set, also mirror the APK to GitVerse for testers who
-cannot reach GitHub: `./scripts/build/android/publish-apk-gitverse.sh apk/<name>.apk` (one commit on
-the `apk` branch as a `.zip` holding the APK, replaced each time; prints the direct link). Give both links.
+cannot reach GitHub: `./scripts/build/android/publish-apk-gitverse.sh apk/<name>.apk` (the bare APK, no
+zip, as one commit on the `apk` branch, replaced each time; prints the direct link). Give both
+links. Test builds never become GitVerse releases -- only real releases do (below).
 
 Keep only the current build in `apk/`: `git rm` the previous APK when adding a new one. Every
-APK is ~60 MB of permanent git history.
+APK is ~60 MB of permanent git history. **Except `apk/testers/`**: builds handed to someone in an
+issue (or still being tested) move there and are never replaced or deleted by a new build -- only
+when the repository owner says so. List each in `apk/testers/README.md` (who has it, why); link
+testers to `apk/testers/<name>.apk`. The GitVerse mirror publishes that folder alongside the
+current build (`testers/` on the `apk` branch).
 
 **Give the user the APK link first, at the top of the reply, not at the end.**
 
@@ -101,7 +106,12 @@ APK is ~60 MB of permanent git history.
 `android/app/build.gradle`, build with `build-dual-hz.sh`, commit the APK as the one file in `apk/`
 and the notes (plus the symbol tables of both engines) under `docs/releases/v<version>/`, push to
 `main`, then run `Actions → Publish Android Release` with the version. It builds nothing, so it
-costs seconds.
+costs seconds. Then duplicate the release on GitVerse -- same title, notes and APK:
+`./scripts/build/android/publish-apk-gitverse.sh --release <version>`, and give its page
+(`https://gitverse.ru/<GITVERSE_REPO>/releases/tag/v<version>`) next to the GitHub one.
+**Before every release** check `docs/WORKDIR/planning/PLAN-026_LANGUAGE_PACKS_PER_GAME.md`: the
+language packs move to one file per game in two steps, each done at a release (never in a test
+build).
 
 CI (`Actions tab → Build Android → Run workflow`) still exists for release
 artifacts and the symbol bundle. For a local build's prerequisites see
@@ -278,7 +288,9 @@ git merge thesuperhackers/main
 
 **Conflict resolution**:
 - Platform code (`Core/GameEngineDevice/`): keep ours
-- Game logic (`GeneralsMD/Code/GameEngine/`): keep theirs
+- Game logic (`GeneralsMD/Code/GameEngine/`): keep theirs -- **except the math mode**: TheSuperHackers
+  PR #2670 makes GameMath/fdlibm the default, which breaks cross-play with the GeneralsOnline PC
+  client (VC6/x87). Read `docs/WORKDIR/planning/PLAN-024_UPSTREAM_DETERMINISTIC_MATH.md` first.
 - Build system: merge carefully, test both versions
 
 ## Code Conventions

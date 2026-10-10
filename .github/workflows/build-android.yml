@@ -288,7 +288,7 @@ jobs:
             -DANDROID_CI_BUILD_NUMBER=${{ github.run_number }} \
             2>&1 | tee logs/configure_android.log
 
-      - name: Build z_generals (libmain.so) + DXVK d3d8/d3d9
+      - name: Build z_generals (libmain.so) + g_generals (libgenerals.so) + DXVK d3d8/d3d9
         run: |
           set -o pipefail
           mkdir -p logs
@@ -300,7 +300,13 @@ jobs:
           # link-time dependency of z_generals, so a targeted build skips them
           # unless named explicitly -- package-android-zh.sh's jniLibs staging
           # requires all four to already exist.
-          cmake --build build/${{ env.PRESET }} --target z_generals dxvk_d3d8_install \
+          # GeneralsX @build Android port 10/10/2026 Also build the base game, Command & Conquer
+          # Generals (g_generals -> libgenerals.so). The launcher's Generals | Zero Hour switch
+          # loads it (SetupActivity.engineLibraries()), and package-android-zh.sh packages it
+          # when it is in the build tree; without this target CI shipped an APK whose Generals
+          # side had no engine. The 60 Hz pair (libmain60/libgenerals60) still comes only from
+          # the local build-dual-hz.sh; the launcher falls back to 30 Hz when it is absent.
+          cmake --build build/${{ env.PRESET }} --target z_generals g_generals dxvk_d3d8_install \
             main_hook file_redirect_hook gsl_alloc_hook hook_impl -- -k 0 2>&1 | tee logs/build_android.log
           ccache --show-stats
 
@@ -322,6 +328,10 @@ jobs:
           # real path deterministic, so use it directly instead of searching.
           GAME_LIB="build/${{ env.PRESET }}/GeneralsMD/Code/Main/libmain.so"
           if [ ! -f "$GAME_LIB" ]; then echo "::error::libmain.so not found at $GAME_LIB"; exit 1; fi
+          # GeneralsX @build Android port 10/10/2026 The base game's engine must be there too,
+          # or the launcher's Generals side would have nothing to load.
+          BASE_GAME_LIB="build/${{ env.PRESET }}/Generals/Code/Main/libgenerals.so"
+          if [ ! -f "$BASE_GAME_LIB" ]; then echo "::error::libgenerals.so not found at $BASE_GAME_LIB"; exit 1; fi
           # GeneralsX @bugfix Android port 31/07/2026 - the deterministic
           # OUTPUT_NAME path above (13/07/2026 fix) stopped `head -1` from
           # grabbing the wrong file, but the readelf check itself still
@@ -600,16 +610,22 @@ jobs:
           set -euo pipefail
           declare -A latest_run
 
+          # GeneralsX @bugfix Android CI 10/10/2026 Only this workflow's own artifacts (the APK,
+          # symbols and build logs) are compared. Counting every workflow's artifacts let a
+          # GeneralsX CI run on the same branch -- started seconds later, so with a higher run
+          # id -- count as "latest", and the APK this very run had just uploaded was deleted.
+          ANDROID_ARTIFACTS='select(.name | test("^(GeneralsXZH-android-|android-symbols-|android-build-logs-)"))'
+
           while IFS=$'\t' read -r branch run_id; do
             [ -z "${branch}" ] && continue
             if [ -z "${latest_run[$branch]:-}" ] || [ "${run_id}" -gt "${latest_run[$branch]}" ]; then
               latest_run[$branch]="${run_id}"
             fi
           done < <(gh api "repos/${{ github.repository }}/actions/artifacts" --paginate \
-            --jq '.artifacts[] | [(.workflow_run.head_branch // ""), .workflow_run.id] | @tsv')
+            --jq ".artifacts[] | ${ANDROID_ARTIFACTS} | [(.workflow_run.head_branch // \"\"), .workflow_run.id] | @tsv")
 
           gh api "repos/${{ github.repository }}/actions/artifacts" --paginate \
-            --jq '.artifacts[] | [(.workflow_run.head_branch // ""), .workflow_run.id, .id] | @tsv' \
+            --jq ".artifacts[] | ${ANDROID_ARTIFACTS} | [(.workflow_run.head_branch // \"\"), .workflow_run.id, .id] | @tsv" \
           | while IFS=$'\t' read -r branch run_id artifact_id; do
               [ -z "${branch}" ] && continue
               if [ "${run_id}" != "${latest_run[$branch]:-}" ]; then

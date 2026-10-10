@@ -4976,6 +4976,10 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 		switch( commandButton->getCommandType() )
 		{
 			case GUI_COMMAND_COMBATDROP:
+				// GeneralsX @bugfix Android port 10/10/2026 A script or AI command with no target object
+				// dereferenced null here (Zero Hour has the same guard). Do nothing instead.
+				if (!obj)
+					break;
 				if( ai )
 				{
 					ai->aiCombatDrop( obj, *(obj->getPosition()), cmdSource );
@@ -4983,6 +4987,10 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 				break;
 			case GUI_COMMAND_SPECIAL_POWER:
 			{
+				// GeneralsX @bugfix Android port 10/10/2026 A script or AI command with no target object
+				// dereferenced null here (Zero Hour has the same guard). Do nothing instead.
+				if (!obj)
+					break;
 				if( commandButton->getSpecialPowerTemplate() )
 				{
 					CommandOption commandOptions = (CommandOption)(commandButton->getOptions() | COMMAND_FIRED_BY_SCRIPT);

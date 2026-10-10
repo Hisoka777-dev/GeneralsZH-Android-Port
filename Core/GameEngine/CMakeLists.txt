@@ -138,6 +138,9 @@ set(GAMEENGINE_SRC
     Include/Common/WorkerProcess.h
     Include/Common/Xfer.h
     Include/Common/GXCrcStream.h
+    Include/Common/GXLogging.h
+    Include/Common/GXRemoteConfig.h
+    Include/Common/GXSafeArea.h
     Include/Common/XferCRC.h
     Include/Common/XferDeepCRC.h
     Include/Common/XferLoad.h
@@ -187,7 +190,7 @@ set(GAMEENGINE_SRC
     Include/GameClient/GameWindow.h
     Include/GameClient/GameWindowGlobal.h
 #    Include/GameClient/GameWindowID.h
-#    Include/GameClient/GameWindowManager.h
+    Include/GameClient/GameWindowManager.h
     Include/GameClient/GameWindowTransitions.h
     Include/GameClient/GlobalLanguage.h
     Include/GameClient/GraphDraw.h
@@ -559,6 +562,7 @@ set(GAMEENGINE_SRC
     Include/GameNetwork/WOLBrowser/WebBrowser.h
 #    Include/Precompiled/PreRTS.h
     Source/Common/AddonCompat.cpp
+    Source/Common/GXSafeArea.cpp
     Source/Common/Audio/AudioEventRTS.cpp
     Source/Common/Audio/AudioRequest.cpp
     Source/Common/Audio/DynamicAudioEventInfo.cpp
@@ -743,11 +747,12 @@ set(GAMEENGINE_SRC
     Source/GameClient/GUI/GameFont.cpp
     Source/GameClient/GUI/GameWindow.cpp
     Source/GameClient/GUI/GameWindowGlobal.cpp
-#    Source/GameClient/GUI/GameWindowManager.cpp
+    Source/GameClient/GUI/GameWindowManager.cpp
 #    Source/GameClient/GUI/GameWindowManagerScript.cpp
     Source/GameClient/GUI/GameWindowTransitions.cpp
 #    Source/GameClient/GUI/GameWindowTransitionsStyles.cpp
     Source/GameClient/GUI/GUICallbacks/ControlBarCallback.cpp
+    Source/GameClient/GUI/GUICallbacks/GroupPanel.cpp
     Source/GameClient/GUI/GUICallbacks/ControlBarPopupDescription.cpp
 #    Source/GameClient/GUI/GUICallbacks/Diplomacy.cpp
 #    Source/GameClient/GUI/GUICallbacks/ExtendedMessageBox.cpp

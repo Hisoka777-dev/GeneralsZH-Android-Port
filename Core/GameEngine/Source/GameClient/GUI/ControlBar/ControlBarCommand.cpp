@@ -497,8 +497,7 @@ void ControlBar::populateCommand( Object *obj )
 
 	}
 
-	if( !addBuilderPageButtons( commandSet, obj ) )
-		addTouchModeButtons( commandSet );
+	addTouchOrderButtons( commandSet );
 
 	//
 	// to avoid a one frame delay where windows may become enabled/disabled, run the update
@@ -547,7 +546,12 @@ static Bool canBeOrderedToForceAttack( const Object *obj )
 	for( ContainedItemsList::const_iterator it = passengers->begin(); it != passengers->end(); ++it )
 	{
 		const Object *passenger = *it;
+#if RTS_ZEROHOUR
 		if( passenger && hasForceAttackWeapon( passenger ) && contain->isPassengerAllowedToFire( passenger->getID() ) )
+#else
+		// Generals: whether passengers may fire is the container's, not the passenger's.
+		if( passenger && hasForceAttackWeapon( passenger ) && contain->isPassengerAllowedToFire() )
+#endif
 			return TRUE;
 	}
 	return FALSE;
@@ -570,36 +574,19 @@ static Bool isBuilderCommandSet( const CommandSet *commandSet )
 }
 
 //-------------------------------------------------------------------------------------------------
-/** GeneralsX @feature Android port 24/09/2026 Put the touch force-attack and waypoint buttons
-	(see initTouchModeButtons) into free slots of the command bar that was just populated.
-
-	commandSet is the single selected object's set, or null for a multi-selection, where the
-	common-command table says which slots are taken.
-
-	A slot is free only if the SET leaves it empty, not merely if its window is hidden right
-	now: a transport's passenger slots are hidden while nobody is inside, and a button parked
-	there would be displaced the moment someone boards. Slot 12 first -- in 123 of the 137
-	stock sets that carry Attack Move it is the one empty cell of the bottom row, between
-	Attack Move (11) and Guard (13) -- then leftwards from 10. A set with no room gets no
-	button; nothing already on the bar is ever covered. */
+/** GeneralsX @feature Android port 24/09/2026, extended 05/10/2026 The touch order buttons the
+	current selection can use, in the order they are laid out: force attack (a weapon), waypoints
+	(something that moves), then scatter and formation (two or more units that move -- what the
+	keyboard's X and Ctrl+F are for). Only the local player's own objects count: an order is only
+	ever given to those. Returns how many were written to out. */
 //-------------------------------------------------------------------------------------------------
-void ControlBar::addTouchModeButtons( const CommandSet *commandSet )
+Int ControlBar::collectTouchOrderButtons( const CommandButton *out[], Int maxCount ) const
 {
 	if( TheInGameUI == nullptr )
-		return;
-	if( m_touchForceAttackButton == nullptr && m_touchWaypointButton == nullptr )
-		return;
+		return 0;
 
-	// A builder's bar (dozer, worker, their fake-building page) is a palette of structures; an
-	// order button in one of its gaps sits among the buildings and reads as one of them. Its
-	// order buttons live on a second page instead (addBuilderPageButtons).
-	if( isBuilderCommandSet( commandSet ) )
-		return;
-
-	// Which of the two the selection can use at all. Only the local player's own objects
-	// count: an order is only ever given to those.
 	Bool canAttack = FALSE;
-	Bool canMove = FALSE;
+	Int movers = 0;
 	const DrawableList *selected = TheInGameUI->getAllSelectedDrawables();
 	for( DrawableListCIt it = selected->begin(); it != selected->end(); ++it )
 	{
@@ -609,89 +596,175 @@ void ControlBar::addTouchModeButtons( const CommandSet *commandSet )
 		if( canBeOrderedToForceAttack( obj ) )
 			canAttack = TRUE;
 		if( obj->isMobile() && !obj->isKindOf( KINDOF_STRUCTURE ) )
-			canMove = TRUE;
+			++movers;
 	}
 
-	const CommandButton *wanted[ 2 ];
+	const CommandButton *wanted[ 4 ];
 	wanted[ 0 ] = canAttack ? m_touchForceAttackButton : nullptr;
-	wanted[ 1 ] = canMove ? m_touchWaypointButton : nullptr;
+	wanted[ 1 ] = movers > 0 ? m_touchWaypointButton : nullptr;
+	wanted[ 2 ] = movers > 1 ? m_touchScatterButton : nullptr;
+	wanted[ 3 ] = movers > 1 ? m_touchFormationButton : nullptr;
+
+	Int count = 0;
+	for( Int b = 0; b < 4 && count < maxCount; ++b )
+		if( wanted[ b ] != nullptr )
+			out[ count++ ] = wanted[ b ];
+	return count;
+}
+
+//-------------------------------------------------------------------------------------------------
+/** GeneralsX @feature Android port 05/10/2026 Is the selection one formation already? Then the
+	formation button is lit, and pressing it breaks the formation up -- what Ctrl+F does to a
+	formation (AIGroup::groupCreateFormation). Read only. */
+//-------------------------------------------------------------------------------------------------
+Bool ControlBar::isSelectionInFormation() const
+{
+	if( TheInGameUI == nullptr )
+		return FALSE;
+
+	FormationID formation = NO_FORMATION_ID;
+	const DrawableList *selected = TheInGameUI->getAllSelectedDrawables();
+	for( DrawableListCIt it = selected->begin(); it != selected->end(); ++it )
+	{
+		const Object *obj = (*it)->getObject();
+		if( obj == nullptr || !obj->isLocallyControlled() || obj->isKindOf( KINDOF_IGNORED_IN_GUI ) )
+			continue;
+		if( !obj->isMobile() || obj->isKindOf( KINDOF_STRUCTURE ) )
+			continue;
+		if( obj->getFormationID() == NO_FORMATION_ID )
+			return FALSE;
+		if( formation == NO_FORMATION_ID )
+			formation = obj->getFormationID();
+		else if( obj->getFormationID() != formation )
+			return FALSE;
+	}
+	return formation != NO_FORMATION_ID;
+}
+
+//-------------------------------------------------------------------------------------------------
+/** The first selected object: which selection the order page was opened for. */
+//-------------------------------------------------------------------------------------------------
+static ObjectID orderPageKey()
+{
+	if( TheInGameUI == nullptr )
+		return INVALID_ID;
+	const DrawableList *selected = TheInGameUI->getAllSelectedDrawables();
+	if( selected == nullptr || selected->empty() )
+		return INVALID_ID;
+	const Object *obj = selected->front()->getObject();
+	return obj ? obj->getID() : INVALID_ID;
+}
+
+//-------------------------------------------------------------------------------------------------
+/** GeneralsX @feature Android port 24/09/2026, one rule for every bar 05/10/2026 Put the touch
+	order buttons (see collectTouchOrderButtons) on the command bar that was just populated.
+
+	commandSet is the single selected object's set, or null for a multi-selection, where the
+	common-command table says which slots are taken.
+
+	A slot is free only if the SET leaves it empty, not merely if its window is hidden right
+	now: a transport's passenger slots are hidden while nobody is inside, and a button parked
+	there would be displaced the moment someone boards. Slot 12 first -- in 123 of the 137
+	stock sets that carry Attack Move it is the one empty cell of the bottom row, between
+	Attack Move (11) and Guard (13) -- then leftwards from 10. Nothing already on the bar is
+	ever covered.
+
+	When they do not all fit -- transports (Humvee, Battle Bus, Troop Crawler, Helix), whose
+	passenger cells are taken -- and always on a builder's bar, whose cells are a palette of
+	structures where an order button would read as one more building, they go on a second page.
+	Page one is the stock bar with the page arrow in its bottom-right cell (slot 14 in Zero Hour,
+	12 in the base game); whatever the set keeps there (Stop, or a builder's Disarm Mines) moves
+	to a free slot, bottom row first, and still works: a command window carries its own button,
+	nothing looks the slot index up again. With no free slot (a full set) it goes to page two.
+	Page two holds that button if it moved there, then the order buttons, from slot 1, and the
+	arrow back in the last cell. */
+//-------------------------------------------------------------------------------------------------
+void ControlBar::addTouchOrderButtons( const CommandSet *commandSet )
+{
+	const CommandButton *wanted[ 4 ];
+	const Int count = collectTouchOrderButtons( wanted, 4 );
+	if( count == 0 )
+	{
+		m_orderPageObject = INVALID_ID;
+		return;
+	}
+
+	// GeneralsX @bugfix Android port 05/10/2026 The page arrow goes in the bar's last cell, whatever
+	// the game: slot 14 in Zero Hour, slot 12 in the base game, whose bar has 12 cells (6 x 2). It
+	// was fixed at slot 14, so Generals had no arrow at all (owner's photo, a dozer).
+	Int pageSlot = -1;
+	for( Int i = MAX_COMMANDS_PER_SET - 1; i >= 0 && pageSlot < 0; --i )
+		if( m_commandWindows[ i ] != nullptr )
+			pageSlot = i;
+	if( pageSlot < 0 )
+		return;
+	const Int PAGE_SLOT = pageSlot;
+	auto slotTaken = [&]( Int i ) -> Bool
+	{
+		return commandSet ? ( commandSet->getCommandButton( i ) != nullptr ) : ( m_commonCommands[ i ] != nullptr );
+	};
 
 	// Zero-based window indices: slot 12, then 10, 9, ... 1.
 	static const Int preferredSlots[] = { 11, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
-	size_t next = 0;
-	for( Int b = 0; b < 2; ++b )
+	Int freeSlots[ ARRAY_SIZE( preferredSlots ) ];
+	Int freeCount = 0;
+	for( size_t k = 0; k < ARRAY_SIZE( preferredSlots ); ++k )
 	{
-		if( wanted[ b ] == nullptr )
-			continue;
+		const Int i = preferredSlots[ k ];
+		if( m_commandWindows[ i ] != nullptr && !slotTaken( i ) )
+			freeSlots[ freeCount++ ] = i;
+	}
 
-		for( ; next < ARRAY_SIZE( preferredSlots ); ++next )
+	if( !isBuilderCommandSet( commandSet ) && freeCount >= count )
+	{
+		m_orderPageObject = INVALID_ID;
+		for( Int b = 0; b < count; ++b )
 		{
-			const Int i = preferredSlots[ next ];
-			GameWindow *win = m_commandWindows[ i ];
-			if( win == nullptr )
-				continue;
-
-			const Bool slotTaken = commandSet
-				? ( commandSet->getCommandButton( i ) != nullptr )
-				: ( m_commonCommands[ i ] != nullptr );
-			if( slotTaken )
-				continue;
-
+			GameWindow *win = m_commandWindows[ freeSlots[ b ] ];
 			win->winHide( FALSE );
 			win->winEnable( TRUE );
 			setControlCommand( win, wanted[ b ] );
 			if( commandSet == nullptr )
-				m_commonCommands[ i ] = wanted[ b ];
+				m_commonCommands[ freeSlots[ b ] ] = wanted[ b ];
+		}
+		return;
+	}
 
-			++next;
-			break;
+	GameWindow *pageWin = m_commandWindows[ PAGE_SLOT ];
+	if( m_touchBuilderMoreButton == nullptr || m_touchBuilderBackButton == nullptr )
+		return;
+
+	// What the set keeps in the arrow's cell moves to a free cell, bottom row first (odd indices),
+	// then the top row from the right. A full set -- the base game's dozer fills all 12 -- has none:
+	// then it goes to the second page, first, ahead of the orders.
+	const CommandButton *moved = commandSet ? commandSet->getCommandButton( PAGE_SLOT ) : m_commonCommands[ PAGE_SLOT ];
+	const Bool movedShown = moved != nullptr && !pageWin->winIsHidden();
+	Int moveTarget = -1;
+	if( movedShown )
+	{
+		static const Int moveSlots[] = { 11, 9, 7, 5, 3, 1, 12, 10, 8, 6, 4, 2, 0 };
+		for( size_t k = 0; k < ARRAY_SIZE( moveSlots ) && moveTarget < 0; ++k )
+		{
+			const Int i = moveSlots[ k ];
+			if( i != PAGE_SLOT && m_commandWindows[ i ] && !slotTaken( i ) )
+				moveTarget = i;
 		}
 	}
-}
+	const CommandButton *overflow = ( movedShown && moveTarget < 0 ) ? moved : nullptr;
 
-//-------------------------------------------------------------------------------------------------
-/** GeneralsX @feature Android port 27/09/2026 Two pages on a builder's bar (see
-	m_builderPageObject). Returns TRUE when commandSet is a builder's, whether or not a page
-	button could be placed, so the caller never adds loose order buttons among structures.
-
-	Page one is the stock bar with the page arrow in slot 14, the bottom-right cell. Every
-	stock builder set that a player controls has at least one empty slot (USA dozer 10 and 12,
-	China dozer 13, GLA worker 11 and 12, its fake page 6-12 and 14), so whatever the set keeps
-	in slot 14 -- Disarm Mines on every one of them -- moves there, bottom row first, and still
-	works: a command window carries its own button, nothing looks the slot index up again.
-
-	Page two holds the order buttons the builder can use, from slot 1, and the arrow back in
-	slot 14. For now that is the waypoint flag: force attack needs a weapon, and a builder's
-	only one clears mines. */
-//-------------------------------------------------------------------------------------------------
-Bool ControlBar::addBuilderPageButtons( const CommandSet *commandSet, const Object *obj )
-{
-	if( !isBuilderCommandSet( commandSet ) )
-		return FALSE;
-	if( obj == nullptr || m_touchBuilderMoreButton == nullptr || m_touchBuilderBackButton == nullptr )
-		return TRUE;
-
-	// What the second page would hold; without anything there is no reason to have one.
-	const CommandButton *pageTwo[ 1 ];
-	Int pageTwoCount = 0;
-	if( m_touchWaypointButton && obj->isLocallyControlled() && obj->isMobile() )
-		pageTwo[ pageTwoCount++ ] = m_touchWaypointButton;
-	if( pageTwoCount == 0 )
-	{
-		m_builderPageObject = INVALID_ID;
-		return TRUE;
-	}
-
-	const Int PAGE_SLOT = 13;	// slot 14, bottom right
-	GameWindow *pageWin = m_commandWindows[ PAGE_SLOT ];
-	if( pageWin == nullptr )
-		return TRUE;
-
-	if( m_builderPageObject == obj->getID() )
+	const ObjectID key = orderPageKey();
+	if( key != INVALID_ID && m_orderPageObject == key )
 	{
 		for( Int i = 0; i < MAX_COMMANDS_PER_SET; ++i )
 			if( m_commandWindows[ i ] )
 				m_commandWindows[ i ]->winHide( TRUE );
+
+		const CommandButton *pageTwo[ 5 ];
+		Int pageTwoCount = 0;
+		if( overflow != nullptr )
+			pageTwo[ pageTwoCount++ ] = overflow;
+		for( Int b = 0; b < count; ++b )
+			pageTwo[ pageTwoCount++ ] = wanted[ b ];
 
 		Int slot = 0;
 		for( Int b = 0; b < pageTwoCount && slot < PAGE_SLOT; ++b, ++slot )
@@ -707,50 +780,36 @@ Bool ControlBar::addBuilderPageButtons( const CommandSet *commandSet, const Obje
 		pageWin->winHide( FALSE );
 		pageWin->winEnable( TRUE );
 		setControlCommand( pageWin, m_touchBuilderBackButton );
-		return TRUE;
+		return;
 	}
+	m_orderPageObject = INVALID_ID;
 
-	// Page one: make room in slot 14 if the stock set uses it. Bottom row first (even slots),
-	// then the top row from the right.
-	const CommandButton *moved = commandSet->getCommandButton( PAGE_SLOT );
-	if( moved != nullptr && !pageWin->winIsHidden() )
+	if( moveTarget >= 0 )
 	{
-		static const Int freeSlots[] = { 11, 9, 7, 5, 3, 1, 12, 10, 8, 6, 4, 2, 0 };
-		GameWindow *target = nullptr;
-		for( size_t k = 0; k < ARRAY_SIZE( freeSlots ); ++k )
-		{
-			const Int i = freeSlots[ k ];
-			if( m_commandWindows[ i ] && commandSet->getCommandButton( i ) == nullptr )
-			{
-				target = m_commandWindows[ i ];
-				break;
-			}
-		}
-		if( target == nullptr )
-			return TRUE;	// a full set keeps its stock layout and gets no second page
-		target->winHide( FALSE );
-		target->winEnable( TRUE );
-		setControlCommand( target, moved );
+		GameWindow *win = m_commandWindows[ moveTarget ];
+		win->winHide( FALSE );
+		win->winEnable( TRUE );
+		setControlCommand( win, moved );
+		if( commandSet == nullptr )
+			m_commonCommands[ moveTarget ] = moved;
 	}
 
 	pageWin->winHide( FALSE );
 	pageWin->winEnable( TRUE );
 	setControlCommand( pageWin, m_touchBuilderMoreButton );
-	return TRUE;
+	if( commandSet == nullptr )
+		m_commonCommands[ PAGE_SLOT ] = m_touchBuilderMoreButton;
 }
 
 //-------------------------------------------------------------------------------------------------
-/** Flip the selected builder's bar between its two pages. UI only. */
+/** Flip the bar between its stock page and the order page. UI only. */
 //-------------------------------------------------------------------------------------------------
-void ControlBar::toggleBuilderPage()
+void ControlBar::toggleOrderPage()
 {
-	const Object *obj = m_currentSelectedDrawable ? m_currentSelectedDrawable->getObject() : nullptr;
-	if( obj == nullptr )
-		return;
-	m_builderPageObject = ( m_builderPageObject == obj->getID() ) ? INVALID_ID : obj->getID();
+	const ObjectID key = orderPageKey();
+	m_orderPageObject = ( key != INVALID_ID && m_orderPageObject != key ) ? key : INVALID_ID;
 	markUIDirty();
 }
-
 //-------------------------------------------------------------------------------------------------
 /** reset transport data */
 //-------------------------------------------------------------------------------------------------
@@ -1277,6 +1336,10 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 		return ( TheInGameUI && TheInGameUI->isInWaypointMode() ) ? COMMAND_ACTIVE : COMMAND_AVAILABLE;
 	if( command != nullptr && ( command == m_touchBuilderMoreButton || command == m_touchBuilderBackButton ) )
 		return COMMAND_AVAILABLE;
+	if( command == m_touchScatterButton && command != nullptr )
+		return COMMAND_AVAILABLE;
+	if( command == m_touchFormationButton && command != nullptr )
+		return isSelectionInFormation() ? COMMAND_ACTIVE : COMMAND_AVAILABLE;
 
 	//If we modify the button (like a gadget clock overlay), then sometimes we may wish to apply it to a specific different button.
 	//But if we don't specify anything (default), then make them the same.

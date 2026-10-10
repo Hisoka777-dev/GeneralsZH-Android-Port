@@ -166,6 +166,15 @@
             android:theme="@style/Theme.GeneralsZHSettings"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 
+        <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel editor.
+             Landscape like the game, so the preview matches where buttons land. -->
+        <activity
+            android:name=".ShortcutEditorActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.GeneralsZHSettings"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
         <activity
             android:name=".NetworkDiagnosticsActivity"
             android:exported="false"
