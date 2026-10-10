@@ -25,6 +25,128 @@
 #include <unistd.h>  // usleep (fallback)
 #endif
 
+#ifdef __ANDROID__
+#include <dlfcn.h>
+#include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <sys/resource.h>
+
+// GeneralsX @performance Android port 10/10/2026 Tell Android how much work each frame is.
+// The whole engine -- logic, rendering, audio mixing calls -- runs on one thread, and a
+// big battle can need more than the CPU's current clock gives that thread. By default the
+// kernel only notices after the frame is already late (it ramps frequency from past load),
+// which shows as frame drops in large fights. Android 13 added ADPF performance hints
+// (APerformanceHint_*): the game states its frame budget and reports each frame's actual
+// work time, and the system raises clocks or moves the thread to a faster core before
+// frames are missed, and lowers them again when there is slack.
+//
+// This only changes WHEN the CPU runs fast, never what the engine computes, so it cannot
+// affect the simulation, replays or multiplayer sync. The functions are looked up at run
+// time (minSdk is 28, the API is 33): on older Android, or a device without support,
+// nothing happens. The work time is measured where FrameRateLimit::wait() is entered, i.e.
+// before the limiter sleeps, so idle time is never reported as work.
+//
+// The engine thread's nice value also goes from 0 to -4 (Android's THREAD_PRIORITY_DISPLAY,
+// below the -8 of Android's own render threads and of real-time audio callbacks), so
+// background app threads take time slices from it less often.
+namespace
+{
+	typedef void* (*PfnGetManager)();
+	typedef void* (*PfnCreateSession)(void* manager, const int32_t* threadIds, size_t size, int64_t initialTargetWorkDurationNanos);
+	typedef int (*PfnUpdateTarget)(void* session, int64_t targetDurationNanos);
+	typedef int (*PfnReportActual)(void* session, int64_t actualDurationNanos);
+
+	const int ENGINE_THREAD_NICE = -4;
+	const Int64 UNCAPPED_TARGET_NS = 1000000000 / 60;
+
+	struct AndroidFrameHint
+	{
+		bool initialized;
+		void* session;
+		PfnUpdateTarget updateTarget;
+		PfnReportActual reportActual;
+		Int64 currentTargetNs;
+	};
+
+	AndroidFrameHint s_frameHint = { false, nullptr, nullptr, nullptr, 0 };
+
+	Int64 targetNsFor(UnsignedInt maxFps)
+	{
+		if (maxFps == 0 || maxFps > 1000)
+			return UNCAPPED_TARGET_NS;
+		return 1000000000 / static_cast<Int64>(maxFps);
+	}
+
+	void initFrameHint(Int64 targetNs)
+	{
+		s_frameHint.initialized = true;
+		const pid_t tid = gettid();
+
+		errno = 0;
+		const int currentNice = getpriority(PRIO_PROCESS, tid);
+		if (errno == 0 && currentNice > ENGINE_THREAD_NICE)
+		{
+			if (setpriority(PRIO_PROCESS, tid, ENGINE_THREAD_NICE) == 0)
+				fprintf(stderr, "[GX-PERF-HINT] engine thread %d nice %d -> %d\n", (int)tid, currentNice, ENGINE_THREAD_NICE);
+			else
+				fprintf(stderr, "[GX-PERF-HINT] engine thread %d: setpriority failed (errno %d), keeping nice %d\n", (int)tid, errno, currentNice);
+		}
+
+		void* libandroid = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+		if (libandroid == nullptr)
+		{
+			fprintf(stderr, "[GX-PERF-HINT] libandroid.so not available, no performance hints\n");
+			return;
+		}
+		PfnGetManager getManager = reinterpret_cast<PfnGetManager>(dlsym(libandroid, "APerformanceHint_getManager"));
+		PfnCreateSession createSession = reinterpret_cast<PfnCreateSession>(dlsym(libandroid, "APerformanceHint_createSession"));
+		PfnUpdateTarget updateTarget = reinterpret_cast<PfnUpdateTarget>(dlsym(libandroid, "APerformanceHint_updateTargetWorkDuration"));
+		PfnReportActual reportActual = reinterpret_cast<PfnReportActual>(dlsym(libandroid, "APerformanceHint_reportActualWorkDuration"));
+		if (getManager == nullptr || createSession == nullptr || updateTarget == nullptr || reportActual == nullptr)
+		{
+			fprintf(stderr, "[GX-PERF-HINT] performance hints need Android 13+, not available here\n");
+			return;
+		}
+		void* manager = getManager();
+		if (manager == nullptr)
+		{
+			fprintf(stderr, "[GX-PERF-HINT] no performance hint manager on this device\n");
+			return;
+		}
+		const int32_t threadIds[1] = { static_cast<int32_t>(tid) };
+		void* session = createSession(manager, threadIds, 1, targetNs);
+		if (session == nullptr)
+		{
+			fprintf(stderr, "[GX-PERF-HINT] device declined a performance hint session\n");
+			return;
+		}
+		s_frameHint.session = session;
+		s_frameHint.updateTarget = updateTarget;
+		s_frameHint.reportActual = reportActual;
+		s_frameHint.currentTargetNs = targetNs;
+		fprintf(stderr, "[GX-PERF-HINT] session active for engine thread %d, target %.2f ms\n", (int)tid, targetNs / 1000000.0);
+	}
+
+	/** Called once per frame on the engine thread with the time the frame spent working. */
+	void reportFrameWork(Int64 workNs, UnsignedInt maxFps)
+	{
+		const Int64 targetNs = targetNsFor(maxFps);
+		if (!s_frameHint.initialized)
+			initFrameHint(targetNs);
+		if (s_frameHint.session == nullptr)
+			return;
+		if (targetNs != s_frameHint.currentTargetNs)
+		{
+			s_frameHint.updateTarget(s_frameHint.session, targetNs);
+			s_frameHint.currentTargetNs = targetNs;
+		}
+		// The API rejects non-positive durations; a frame always does some work.
+		s_frameHint.reportActual(s_frameHint.session, workNs > 0 ? workNs : 1);
+	}
+}
+#endif
+
 FrameRateLimit::FrameRateLimit()
 {
 #ifdef _WIN32
@@ -63,6 +185,9 @@ Real FrameRateLimit::wait(UnsignedInt maxFps)
 		clock_gettime(CLOCK_MONOTONIC, &tick);
 		Int64 tickValue = static_cast<Int64>(tick.tv_sec) * 1000000000 + tick.tv_nsec;
 		double elapsedSeconds = static_cast<double>(tickValue - m_start) / static_cast<double>(m_freq);
+#ifdef __ANDROID__
+		reportFrameWork(tickValue - m_start, maxFps);
+#endif
 		m_start = tickValue;
 		return static_cast<Real>(elapsedSeconds);
 #endif
@@ -98,8 +223,22 @@ Real FrameRateLimit::wait(UnsignedInt maxFps)
 	clock_gettime(CLOCK_MONOTONIC, &tick);
 	Int64 tickValue = static_cast<Int64>(tick.tv_sec) * 1000000000 + tick.tv_nsec;
 	double elapsedSeconds = static_cast<double>(tickValue - m_start) / static_cast<double>(m_freq);
+#ifdef __ANDROID__
+	// Before any sleeping: this is the frame's own work.
+	reportFrameWork(tickValue - m_start, maxFps);
+#endif
 	const double targetSeconds = 1.0 / maxFps;
-	const double sleepSeconds = targetSeconds - elapsedSeconds - 0.002; // leave ~2ms for spin wait
+#ifdef __ANDROID__
+	// GeneralsX @performance Android port 10/10/2026 Spin 0.5 ms instead of 2 ms. Every frame
+	// the limiter busy-waits the last stretch on the engine's core; on a phone that is pure
+	// heat (about 12% of a core at 60 fps), and heat is what throttles the clocks later in a
+	// long battle. Android's nanosleep wakes within tens of microseconds, so 0.5 ms keeps the
+	// same frame timing. Pacing only -- the simulation never sees this.
+	const double spinSeconds = 0.0005;
+#else
+	const double spinSeconds = 0.002;
+#endif
+	const double sleepSeconds = targetSeconds - elapsedSeconds - spinSeconds; // leave a little for spin wait
 
 	if (sleepSeconds > 0.0)
 	{
