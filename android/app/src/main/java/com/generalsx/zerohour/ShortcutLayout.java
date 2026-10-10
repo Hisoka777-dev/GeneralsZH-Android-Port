@@ -107,19 +107,34 @@ final class ShortcutLayout {
 
     // ------------------------------------------------------------ defaults
 
-    /** One row along the bottom, like the reference layout: ESC, SPACE, F, D, S, A, R, W, Q, E. */
+    /**
+     * Two rows across the top of the screen: the control-group digits 1-9 and 0 (a tap
+     * selects that group, as on a keyboard), and under them the reference layout's keys
+     * E, Q, W, R, A, S, D, F, SPACE, ESC. Kept clear of the bottom of the screen, where
+     * the game's own control bar sits, and below the hide/show handle at the top centre.
+     */
     static ShortcutLayout defaults() {
         ShortcutLayout l = new ShortcutLayout();
-        int[] keys = {
+        int[] digits = {
+            KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_4,
+            KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_7, KeyEvent.KEYCODE_8,
+            KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_0,
+        };
+        int[] letters = {
             KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_Q, KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_R,
             KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_F,
             KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ESCAPE,
         };
-        for (int i = 0; i < keys.length; i++) {
-            // Centres of a 10-column grid, three quarters of the way down the screen.
-            l.buttons.add(new Button("", keys[i], 0, (i + 0.5f) / keys.length, 0.75f));
-        }
+        addRow(l, digits, 0.15f);
+        addRow(l, letters, 0.30f);
         return l;
+    }
+
+    /** One row on the centres of a 10-column grid, at {@code y} (fraction of the height). */
+    private static void addRow(ShortcutLayout l, int[] keys, float y) {
+        for (int i = 0; i < keys.length; i++) {
+            l.buttons.add(new Button("", keys[i], 0, (i + 0.5f) / keys.length, y));
+        }
     }
 
     // ------------------------------------------------------------ storage
