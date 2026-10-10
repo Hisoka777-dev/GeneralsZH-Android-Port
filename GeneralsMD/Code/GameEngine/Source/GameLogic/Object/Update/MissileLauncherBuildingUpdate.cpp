@@ -208,6 +208,21 @@ Bool MissileLauncherBuildingUpdate::initiateIntentToDoSpecialPower( const Specia
 		us->getSpecialPowerModule(specialPowerTemplate)->setReadyFrame(0xFFFFFFFF);
 		return FALSE;
 	}
+#else
+	// GeneralsX @bugfix Android port 10/10/2026 Same crash, in the build mode this port uses
+	// (RETAIL_COMPATIBLE_CRC 0), where the fix above is compiled out and nothing replaces it:
+	// m_specialPowerModule is only looked up by update() once construction is finished, so
+	// an order that arrives before that -- in practice the skirmish AI's "fire special power
+	// at most cost" script picking a SCUD Storm or missile silo that is still under
+	// construction or has not updated yet -- dereferenced null and killed the game (SIGSEGV
+	// in initiateIntentToDoSpecialPower, reported after an hour of skirmish). Decline the
+	// order instead: SpecialPowerModule sees no module took it, the power is neither fired
+	// nor spent (these buildings start the attack from their update), and the AI asks again
+	// once the building is ready. The retail game crashed here, so no existing outcome changes.
+	if (!m_specialPowerModule)
+	{
+		return FALSE;
+	}
 #endif
 
 	if( m_specialPowerModule->getSpecialPowerTemplate() != specialPowerTemplate )
