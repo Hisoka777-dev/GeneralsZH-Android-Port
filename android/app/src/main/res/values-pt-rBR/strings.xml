@@ -345,4 +345,42 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">Aplicar tamanho da interface</string>
     <string name="setup_interface_scale_help">Aumenta a interface do jogo sem mexer nos arquivos dele: a barra de controle com o radar cresce para cima a partir da borda inferior, e a barra de poderes do general, o chat, as mensagens de eventos, a lista de jogadores, o menu da partida com Salvar/Carregar e Opções e os botões do menu principal crescem a partir de onde estão. Nada sai da tela: cada parte só cresce até onde cabe, então num celular largo a barra de controle fica mais alta em vez de mais larga, e o campo de batalha acima dela, mais baixo. Funciona junto com o tamanho do texto do menu. Vale a partir da próxima vez que você abrir o jogo.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Controles de toque</string>
+    <string name="shortcuts_card_desc">Monte seu próprio painel de atalhos dentro do jogo: adicione ou remova botões, escolha teclas com Ctrl, Shift ou Alt, arraste cada botão para onde quiser na tela e ajuste o tamanho e a opacidade.</string>
+    <string name="shortcuts_switch_title">Mostrar painel de atalhos</string>
+    <string name="shortcuts_switch_desc">Mostra seus botões de atalho sobre o campo de batalha durante a partida. O pequeno botão ⌨ no topo da tela esconde e mostra os botões. O layout completo é editado abaixo.</string>
+    <string name="shortcuts_button_configure">Configurar controles de toque</string>
+    <string name="shortcuts_toggle_handle">Esconder ou mostrar os botões de atalho</string>
+    <string name="shortcuts_editor_hint">Toque em um botão para selecioná-lo e arraste-o para onde quiser</string>
+    <string name="shortcuts_editor_caption">Prévia da tela do jogo</string>
+    <string name="shortcuts_action_add">Adicionar</string>
+    <string name="shortcuts_action_edit">Editar</string>
+    <string name="shortcuts_action_delete">Excluir</string>
+    <string name="shortcuts_action_defaults">Padrão</string>
+    <string name="shortcuts_action_save">Salvar</string>
+    <string name="shortcuts_action_export">Exportar</string>
+    <string name="shortcuts_action_import">Importar</string>
+    <string name="shortcuts_size_label" formatted="true">Tamanho do botão: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Opacidade do botão: %1$d%%</string>
+    <string name="shortcuts_select_first">Selecione um botão primeiro</string>
+    <string name="shortcuts_defaults_confirm">Substituir todos os botões pelo layout padrão?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Cancelar</string>
+    <string name="shortcuts_discard">Descartar</string>
+    <string name="shortcuts_saved">Painel de atalhos salvo</string>
+    <string name="shortcuts_exported">Layout exportado</string>
+    <string name="shortcuts_export_failed">Não foi possível exportar o layout</string>
+    <string name="shortcuts_imported">Layout importado — toque em Salvar para mantê-lo</string>
+    <string name="shortcuts_import_failed">Esse arquivo não é um layout de atalhos</string>
+    <string name="shortcuts_no_file_picker">Nenhum gerenciador de arquivos disponível</string>
+    <string name="shortcuts_field_label">Nome (opcional)</string>
+    <string name="shortcuts_field_label_hint">Aparece no botão</string>
+    <string name="shortcuts_field_key">Tecla</string>
+    <string name="shortcuts_field_modifiers">Junto com</string>
+    <string name="shortcuts_dialog_add_title">Novo botão</string>
+    <string name="shortcuts_dialog_edit_title">Editar botão</string>
+    <string name="shortcuts_unsaved_title">Alterações não salvas</string>
+    <string name="shortcuts_unsaved_message">Salvar as alterações do painel de atalhos?</string>
 </resources>
