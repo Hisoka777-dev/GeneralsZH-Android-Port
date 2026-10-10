@@ -610,16 +610,22 @@ jobs:
           set -euo pipefail
           declare -A latest_run
 
+          # GeneralsX @bugfix Android CI 10/10/2026 Only this workflow's own artifacts (the APK,
+          # symbols and build logs) are compared. Counting every workflow's artifacts let a
+          # GeneralsX CI run on the same branch -- started seconds later, so with a higher run
+          # id -- count as "latest", and the APK this very run had just uploaded was deleted.
+          ANDROID_ARTIFACTS='select(.name | test("^(GeneralsXZH-android-|android-symbols-|android-build-logs-)"))'
+
           while IFS=$'\t' read -r branch run_id; do
             [ -z "${branch}" ] && continue
             if [ -z "${latest_run[$branch]:-}" ] || [ "${run_id}" -gt "${latest_run[$branch]}" ]; then
               latest_run[$branch]="${run_id}"
             fi
           done < <(gh api "repos/${{ github.repository }}/actions/artifacts" --paginate \
-            --jq '.artifacts[] | [(.workflow_run.head_branch // ""), .workflow_run.id] | @tsv')
+            --jq ".artifacts[] | ${ANDROID_ARTIFACTS} | [(.workflow_run.head_branch // \"\"), .workflow_run.id] | @tsv")
 
           gh api "repos/${{ github.repository }}/actions/artifacts" --paginate \
-            --jq '.artifacts[] | [(.workflow_run.head_branch // ""), .workflow_run.id, .id] | @tsv' \
+            --jq ".artifacts[] | ${ANDROID_ARTIFACTS} | [(.workflow_run.head_branch // \"\"), .workflow_run.id, .id] | @tsv" \
           | while IFS=$'\t' read -r branch run_id artifact_id; do
               [ -z "${branch}" ] && continue
               if [ "${run_id}" != "${latest_run[$branch]:-}" ]; then
