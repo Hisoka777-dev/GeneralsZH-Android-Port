@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">Velikost kursora: %1$d%%</string>
     <string name="setup_switch_skip_intro">Propuščati zastavky</string>
     <string name="setup_switch_skip_intro_desc">Logotipy EA, vstupno video i druge filmy pred menju se ne pokazujut — igra odrazu prěhodi k zagruzkě. Za obě igry, i s modami.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Dotykovo upravjanje</string>
+    <string name="shortcuts_card_desc">Sozdaj svoju panel skratok v igrě: dodavaj ili udaljaj knopky, izberi klaviše s Ctrl, Shift ili Alt, pretegni každu knopku na želano město na ekranu i nastavi veličinu i prozračnost knopok.</string>
+    <string name="shortcuts_switch_title">Pokazati panel skratok</string>
+    <string name="shortcuts_switch_desc">Pokazuje tvoje knopky skratok nad bojnym poljem vo vrěmę igry. Mala knopka ⌨ navrhu ekrana jih skryvaje i pokazuje. Polny raspored se uređuje niže.</string>
+    <string name="shortcuts_button_configure">Nastaviti dotykovo upravjanje</string>
+    <string name="shortcuts_toggle_handle">Skryti ili pokazati knopky skratok</string>
+    <string name="shortcuts_editor_hint">Dotkni se knopky, da by ju izbral, potom ju pretegni na želano město</string>
+    <string name="shortcuts_editor_caption">Prědprosmotr ekrana igry</string>
+    <string name="shortcuts_action_add">Dodati</string>
+    <string name="shortcuts_action_edit">Urediti</string>
+    <string name="shortcuts_action_delete">Udaliti</string>
+    <string name="shortcuts_action_defaults">Standardne</string>
+    <string name="shortcuts_action_save">Shraniti</string>
+    <string name="shortcuts_action_export">Eksport</string>
+    <string name="shortcuts_action_import">Import</string>
+    <string name="shortcuts_size_label" formatted="true">Veličina knopky: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Prozračnost knopky: %1$d%%</string>
+    <string name="shortcuts_select_first">Najprvo izberi knopku</string>
+    <string name="shortcuts_defaults_confirm">Zaměniti vse knopky standardnym rasporedom?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Otměniti</string>
+    <string name="shortcuts_discard">Odkinuti</string>
+    <string name="shortcuts_saved">Panel skratok shranjeny</string>
+    <string name="shortcuts_exported">Raspored eksportovany</string>
+    <string name="shortcuts_export_failed">Ne bylo možno eksportovati raspored</string>
+    <string name="shortcuts_imported">Raspored importovany — nažmi Shraniti, da by ga ohranil</string>
+    <string name="shortcuts_import_failed">Toj fajl ne jest raspored skratok</string>
+    <string name="shortcuts_no_file_picker">Nema dostupnogo upravitelja fajlov</string>
+    <string name="shortcuts_field_label">Imę (neobvęzno)</string>
+    <string name="shortcuts_field_label_hint">Pokazano na knopkě</string>
+    <string name="shortcuts_field_key">Klaviša</string>
+    <string name="shortcuts_field_modifiers">Vkupě s</string>
+    <string name="shortcuts_dialog_add_title">Nova knopka</string>
+    <string name="shortcuts_dialog_edit_title">Urediti knopku</string>
+    <string name="shortcuts_unsaved_title">Neshranjene měny</string>
+    <string name="shortcuts_unsaved_message">Shraniti měny panela skratok?</string>
 </resources>

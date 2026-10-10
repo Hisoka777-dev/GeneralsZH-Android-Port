@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">حجم المؤشر: %1$d%%</string>
     <string name="setup_switch_skip_intro">تخطي مقاطع المقدمة</string>
     <string name="setup_switch_skip_intro_desc">تُتخطى شعارات EA والمقدمة والمقاطع الأخرى قبل القائمة، وتبدأ اللعبة التحميل مباشرة. للعبتين، ومع التعديلات أيضًا.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">التحكم باللمس</string>
+    <string name="shortcuts_card_desc">أنشئ لوحة اختصارات خاصة بك داخل اللعبة: أضف الأزرار أو احذفها، واختر مفاتيح لوحة المفاتيح مع Ctrl أو Shift أو Alt، واسحب كل زر إلى موضعه المفضل على الشاشة، واضبط حجم الأزرار وشفافيتها.</string>
+    <string name="shortcuts_switch_title">إظهار لوحة الاختصارات</string>
+    <string name="shortcuts_switch_desc">تُظهر أزرار الاختصارات المخصّصة فوق الخريطة أثناء اللعب. زر ⌨ الصغير أعلى الشاشة يخفيها ويُظهرها. تعديل التوزيع الكامل يبقى في المحرّر أدناه.</string>
+    <string name="shortcuts_button_configure">تهيئة عناصر التحكم باللمس</string>
+    <string name="shortcuts_toggle_handle">إخفاء أو إظهار أزرار الاختصارات</string>
+    <string name="shortcuts_editor_hint">اضغط على زر لتحديده، ثم اسحبه إلى الموضع المطلوب</string>
+    <string name="shortcuts_editor_caption">معاينة شاشة اللعبة</string>
+    <string name="shortcuts_action_add">إضافة</string>
+    <string name="shortcuts_action_edit">تعديل</string>
+    <string name="shortcuts_action_delete">حذف</string>
+    <string name="shortcuts_action_defaults">الافتراضية</string>
+    <string name="shortcuts_action_save">حفظ</string>
+    <string name="shortcuts_action_export">تصدير</string>
+    <string name="shortcuts_action_import">استيراد</string>
+    <string name="shortcuts_size_label" formatted="true">حجم الزر: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">شفافية الزر: %1$d%%</string>
+    <string name="shortcuts_select_first">حدّد زراً أولاً</string>
+    <string name="shortcuts_defaults_confirm">استبدال كل الأزرار بالتوزيع الافتراضي؟</string>
+    <string name="shortcuts_ok">موافق</string>
+    <string name="shortcuts_cancel">إلغاء</string>
+    <string name="shortcuts_discard">تجاهل</string>
+    <string name="shortcuts_saved">تم حفظ لوحة الاختصارات</string>
+    <string name="shortcuts_exported">تم تصدير التوزيع</string>
+    <string name="shortcuts_export_failed">تعذّر تصدير التوزيع</string>
+    <string name="shortcuts_imported">تم استيراد التوزيع — اضغط حفظ للإبقاء عليه</string>
+    <string name="shortcuts_import_failed">هذا الملف ليس توزيع اختصارات</string>
+    <string name="shortcuts_no_file_picker">لا يوجد مدير ملفات متاح</string>
+    <string name="shortcuts_field_label">الاسم (اختياري)</string>
+    <string name="shortcuts_field_label_hint">يظهر على الزر</string>
+    <string name="shortcuts_field_key">المفتاح</string>
+    <string name="shortcuts_field_modifiers">مع الضغط على</string>
+    <string name="shortcuts_dialog_add_title">زر جديد</string>
+    <string name="shortcuts_dialog_edit_title">تعديل الزر</string>
+    <string name="shortcuts_unsaved_title">تغييرات غير محفوظة</string>
+    <string name="shortcuts_unsaved_message">هل تريد حفظ تغييراتك على لوحة الاختصارات؟</string>
 </resources>

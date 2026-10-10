@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">Розмір курсора: %1$d%%</string>
     <string name="setup_switch_skip_intro">Пропускати заставки</string>
     <string name="setup_switch_skip_intro_desc">Логотипи EA, вступне відео та інші ролики перед меню не показуються — гра одразу переходить до завантаження. Для обох ігор, і з модами теж.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Сенсорне керування</string>
+    <string name="shortcuts_card_desc">Створіть власну панель гарячих клавіш у грі: додавайте й видаляйте кнопки, обирайте клавіші з Ctrl, Shift або Alt, перетягуйте кожну кнопку в потрібне місце екрана та налаштовуйте їхній розмір і прозорість.</string>
+    <string name="shortcuts_switch_title">Показувати панель клавіш</string>
+    <string name="shortcuts_switch_desc">Показує ваші кнопки гарячих клавіш поверх поля бою під час гри. Маленька кнопка ⌨ угорі екрана ховає та показує їх. Повне розташування редагується нижче.</string>
+    <string name="shortcuts_button_configure">Налаштувати сенсорне керування</string>
+    <string name="shortcuts_toggle_handle">Сховати або показати кнопки</string>
+    <string name="shortcuts_editor_hint">Торкніться кнопки, щоб вибрати її, потім перетягніть у потрібне місце</string>
+    <string name="shortcuts_editor_caption">Попередній перегляд екрана гри</string>
+    <string name="shortcuts_action_add">Додати</string>
+    <string name="shortcuts_action_edit">Змінити</string>
+    <string name="shortcuts_action_delete">Видалити</string>
+    <string name="shortcuts_action_defaults">Типові</string>
+    <string name="shortcuts_action_save">Зберегти</string>
+    <string name="shortcuts_action_export">Експорт</string>
+    <string name="shortcuts_action_import">Імпорт</string>
+    <string name="shortcuts_size_label" formatted="true">Розмір кнопок: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Непрозорість: %1$d%%</string>
+    <string name="shortcuts_select_first">Спершу виберіть кнопку</string>
+    <string name="shortcuts_defaults_confirm">Замінити всі кнопки типовим розташуванням?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Скасувати</string>
+    <string name="shortcuts_discard">Не зберігати</string>
+    <string name="shortcuts_saved">Панель клавіш збережено</string>
+    <string name="shortcuts_exported">Розташування експортовано</string>
+    <string name="shortcuts_export_failed">Не вдалося експортувати розташування</string>
+    <string name="shortcuts_imported">Розташування імпортовано — натисніть «Зберегти», щоб залишити його</string>
+    <string name="shortcuts_import_failed">Цей файл не є розташуванням клавіш</string>
+    <string name="shortcuts_no_file_picker">Немає доступного файлового менеджера</string>
+    <string name="shortcuts_field_label">Назва (необов’язково)</string>
+    <string name="shortcuts_field_label_hint">Показується на кнопці</string>
+    <string name="shortcuts_field_key">Клавіша</string>
+    <string name="shortcuts_field_modifiers">Разом із</string>
+    <string name="shortcuts_dialog_add_title">Нова кнопка</string>
+    <string name="shortcuts_dialog_edit_title">Змінити кнопку</string>
+    <string name="shortcuts_unsaved_title">Незбережені зміни</string>
+    <string name="shortcuts_unsaved_message">Зберегти зміни панелі клавіш?</string>
 </resources>

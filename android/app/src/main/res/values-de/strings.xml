@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">Zeigergröße: %1$d %%</string>
     <string name="setup_switch_skip_intro">Intro-Videos überspringen</string>
     <string name="setup_switch_skip_intro_desc">EA-Logos, das Intro und andere Videos vor dem Menü werden übersprungen; das Spiel lädt sofort. Für beide Spiele, auch mit Mods.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Touch-Steuerung</string>
+    <string name="shortcuts_card_desc">Bau dir dein eigenes Tastenfeld im Spiel: Tasten hinzufügen oder entfernen, Tastaturtasten mit Strg, Umschalt oder Alt wählen, jede Taste an ihren Platz auf dem Bildschirm ziehen und Größe und Deckkraft einstellen.</string>
+    <string name="shortcuts_switch_title">Tastenfeld anzeigen</string>
+    <string name="shortcuts_switch_desc">Zeigt deine eigenen Tasten während des Spiels über dem Schlachtfeld. Die kleine ⌨-Taste oben am Bildschirm blendet sie aus und ein. Die Anordnung bearbeitest du unten.</string>
+    <string name="shortcuts_button_configure">Touch-Steuerung einrichten</string>
+    <string name="shortcuts_toggle_handle">Tasten aus- oder einblenden</string>
+    <string name="shortcuts_editor_hint">Tippe auf eine Taste, um sie auszuwählen, und ziehe sie dann an die gewünschte Stelle</string>
+    <string name="shortcuts_editor_caption">Vorschau des Spielbildschirms</string>
+    <string name="shortcuts_action_add">Hinzufügen</string>
+    <string name="shortcuts_action_edit">Bearbeiten</string>
+    <string name="shortcuts_action_delete">Löschen</string>
+    <string name="shortcuts_action_defaults">Standard</string>
+    <string name="shortcuts_action_save">Speichern</string>
+    <string name="shortcuts_action_export">Exportieren</string>
+    <string name="shortcuts_action_import">Importieren</string>
+    <string name="shortcuts_size_label" formatted="true">Tastengröße: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Deckkraft: %1$d%%</string>
+    <string name="shortcuts_select_first">Wähle zuerst eine Taste aus</string>
+    <string name="shortcuts_defaults_confirm">Alle Tasten durch die Standardanordnung ersetzen?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Abbrechen</string>
+    <string name="shortcuts_discard">Verwerfen</string>
+    <string name="shortcuts_saved">Tastenfeld gespeichert</string>
+    <string name="shortcuts_exported">Anordnung exportiert</string>
+    <string name="shortcuts_export_failed">Anordnung konnte nicht exportiert werden</string>
+    <string name="shortcuts_imported">Anordnung importiert — Speichern tippen, um sie zu behalten</string>
+    <string name="shortcuts_import_failed">Diese Datei ist keine Tastenanordnung</string>
+    <string name="shortcuts_no_file_picker">Kein Dateimanager verfügbar</string>
+    <string name="shortcuts_field_label">Name (optional)</string>
+    <string name="shortcuts_field_label_hint">Wird auf der Taste angezeigt</string>
+    <string name="shortcuts_field_key">Taste</string>
+    <string name="shortcuts_field_modifiers">Zusammen mit</string>
+    <string name="shortcuts_dialog_add_title">Neue Taste</string>
+    <string name="shortcuts_dialog_edit_title">Taste bearbeiten</string>
+    <string name="shortcuts_unsaved_title">Ungespeicherte Änderungen</string>
+    <string name="shortcuts_unsaved_message">Änderungen am Tastenfeld speichern?</string>
 </resources>

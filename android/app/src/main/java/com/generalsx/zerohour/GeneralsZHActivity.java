@@ -414,6 +414,42 @@ public class GeneralsZHActivity extends SDLActivity {
         }
 
         super.onCreate(savedInstanceState);
+        setUpShortcutOverlay();
+    }
+
+    // GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (Setup -> Touch
+    // controls): on-screen buttons that press keyboard keys. It sits in mLayout just above
+    // the SDL surface and claims only touches that start on one of its buttons, so map
+    // touch (tap, drag, pinch) reaches the surface exactly as before. Off by default; with
+    // the switch off nothing is added at all. See ShortcutOverlay.
+    private ShortcutOverlay shortcutOverlay;
+
+    private void setUpShortcutOverlay() {
+        if (mBrokenLibraries || mLayout == null) {
+            return;  // SDL showed its own error dialog; there is no game to add buttons to
+        }
+        shortcutOverlay = new ShortcutOverlay(this, mLayout, new ShortcutOverlay.KeySink() {
+            @Override public void keyDown(int keyCode) { onNativeKeyDown(keyCode); }
+            @Override public void keyUp(int keyCode) { onNativeKeyUp(keyCode); }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Re-read every time: the layout or the switch may have changed in Setup meanwhile.
+        if (shortcutOverlay != null) {
+            shortcutOverlay.reload();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        // Never leave a key held down while the game is in the background.
+        if (shortcutOverlay != null) {
+            shortcutOverlay.releaseAll();
+        }
+        super.onPause();
     }
 
     // GeneralsX @bugfix Android port 02/08/2026 A tester reported the camera

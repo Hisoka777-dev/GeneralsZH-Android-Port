@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">Rozmiar kursora: %1$d%%</string>
     <string name="setup_switch_skip_intro">Pomijaj filmy wprowadzające</string>
     <string name="setup_switch_skip_intro_desc">Logo EA, intro i inne filmy przed menu są pomijane — gra od razu przechodzi do wczytywania. Dla obu gier, także z modami.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Sterowanie dotykowe</string>
+    <string name="shortcuts_card_desc">Zbuduj własny panel skrótów w grze: dodawaj i usuwaj przyciski, wybieraj klawisze z Ctrl, Shift lub Alt, przeciągaj każdy przycisk w wybrane miejsce ekranu i ustaw ich rozmiar oraz przezroczystość.</string>
+    <string name="shortcuts_switch_title">Pokaż panel skrótów</string>
+    <string name="shortcuts_switch_desc">Pokazuje twoje przyciski skrótów nad polem bitwy podczas gry. Mały przycisk ⌨ u góry ekranu je ukrywa i pokazuje. Pełny układ edytujesz poniżej.</string>
+    <string name="shortcuts_button_configure">Konfiguruj sterowanie dotykowe</string>
+    <string name="shortcuts_toggle_handle">Ukryj lub pokaż przyciski skrótów</string>
+    <string name="shortcuts_editor_hint">Dotknij przycisku, aby go zaznaczyć, a potem przeciągnij go w wybrane miejsce</string>
+    <string name="shortcuts_editor_caption">Podgląd ekranu gry</string>
+    <string name="shortcuts_action_add">Dodaj</string>
+    <string name="shortcuts_action_edit">Edytuj</string>
+    <string name="shortcuts_action_delete">Usuń</string>
+    <string name="shortcuts_action_defaults">Domyślne</string>
+    <string name="shortcuts_action_save">Zapisz</string>
+    <string name="shortcuts_action_export">Eksportuj</string>
+    <string name="shortcuts_action_import">Importuj</string>
+    <string name="shortcuts_size_label" formatted="true">Rozmiar przycisku: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Krycie przycisku: %1$d%%</string>
+    <string name="shortcuts_select_first">Najpierw zaznacz przycisk</string>
+    <string name="shortcuts_defaults_confirm">Zastąpić wszystkie przyciski układem domyślnym?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Anuluj</string>
+    <string name="shortcuts_discard">Odrzuć</string>
+    <string name="shortcuts_saved">Zapisano panel skrótów</string>
+    <string name="shortcuts_exported">Wyeksportowano układ</string>
+    <string name="shortcuts_export_failed">Nie udało się wyeksportować układu</string>
+    <string name="shortcuts_imported">Zaimportowano układ — dotknij Zapisz, aby go zachować</string>
+    <string name="shortcuts_import_failed">Ten plik nie jest układem skrótów</string>
+    <string name="shortcuts_no_file_picker">Brak dostępnego menedżera plików</string>
+    <string name="shortcuts_field_label">Nazwa (opcjonalnie)</string>
+    <string name="shortcuts_field_label_hint">Widoczna na przycisku</string>
+    <string name="shortcuts_field_key">Klawisz</string>
+    <string name="shortcuts_field_modifiers">Razem z</string>
+    <string name="shortcuts_dialog_add_title">Nowy przycisk</string>
+    <string name="shortcuts_dialog_edit_title">Edytuj przycisk</string>
+    <string name="shortcuts_unsaved_title">Niezapisane zmiany</string>
+    <string name="shortcuts_unsaved_message">Zapisać zmiany w panelu skrótów?</string>
 </resources>

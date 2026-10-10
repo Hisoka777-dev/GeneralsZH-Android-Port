@@ -366,4 +366,42 @@
     <string name="setup_cursor_size_label">Размер курсора: %1$d%%</string>
     <string name="setup_switch_skip_intro">Пропускать заставки</string>
     <string name="setup_switch_skip_intro_desc">Логотипы EA, вступительное видео и другие ролики перед меню не показываются — игра сразу переходит к загрузке. Для обеих игр, и с модами тоже.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Сенсорное управление</string>
+    <string name="shortcuts_card_desc">Создайте собственную панель горячих клавиш в игре: добавляйте и удаляйте кнопки, выбирайте клавиши с Ctrl, Shift или Alt, перетаскивайте каждую кнопку в нужное место экрана и настраивайте их размер и прозрачность.</string>
+    <string name="shortcuts_switch_title">Показывать панель клавиш</string>
+    <string name="shortcuts_switch_desc">Показывает ваши кнопки горячих клавиш поверх поля боя во время игры. Маленькая кнопка ⌨ вверху экрана скрывает и показывает их. Полная раскладка редактируется ниже.</string>
+    <string name="shortcuts_button_configure">Настроить сенсорное управление</string>
+    <string name="shortcuts_toggle_handle">Скрыть или показать кнопки</string>
+    <string name="shortcuts_editor_hint">Коснитесь кнопки, чтобы выбрать её, затем перетащите в нужное место</string>
+    <string name="shortcuts_editor_caption">Предпросмотр экрана игры</string>
+    <string name="shortcuts_action_add">Добавить</string>
+    <string name="shortcuts_action_edit">Изменить</string>
+    <string name="shortcuts_action_delete">Удалить</string>
+    <string name="shortcuts_action_defaults">По умолчанию</string>
+    <string name="shortcuts_action_save">Сохранить</string>
+    <string name="shortcuts_action_export">Экспорт</string>
+    <string name="shortcuts_action_import">Импорт</string>
+    <string name="shortcuts_size_label" formatted="true">Размер кнопок: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Непрозрачность: %1$d%%</string>
+    <string name="shortcuts_select_first">Сначала выберите кнопку</string>
+    <string name="shortcuts_defaults_confirm">Заменить все кнопки раскладкой по умолчанию?</string>
+    <string name="shortcuts_ok">ОК</string>
+    <string name="shortcuts_cancel">Отмена</string>
+    <string name="shortcuts_discard">Не сохранять</string>
+    <string name="shortcuts_saved">Панель клавиш сохранена</string>
+    <string name="shortcuts_exported">Раскладка экспортирована</string>
+    <string name="shortcuts_export_failed">Не удалось экспортировать раскладку</string>
+    <string name="shortcuts_imported">Раскладка импортирована — нажмите «Сохранить», чтобы оставить её</string>
+    <string name="shortcuts_import_failed">Этот файл не является раскладкой клавиш</string>
+    <string name="shortcuts_no_file_picker">Нет доступного файлового менеджера</string>
+    <string name="shortcuts_field_label">Название (необязательно)</string>
+    <string name="shortcuts_field_label_hint">Показывается на кнопке</string>
+    <string name="shortcuts_field_key">Клавиша</string>
+    <string name="shortcuts_field_modifiers">Вместе с</string>
+    <string name="shortcuts_dialog_add_title">Новая кнопка</string>
+    <string name="shortcuts_dialog_edit_title">Изменить кнопку</string>
+    <string name="shortcuts_unsaved_title">Несохранённые изменения</string>
+    <string name="shortcuts_unsaved_message">Сохранить изменения панели клавиш?</string>
 </resources>

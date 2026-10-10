@@ -364,4 +364,42 @@
     <string name="setup_cursor_size_label">커서 크기: %1$d%%</string>
     <string name="setup_switch_skip_intro">인트로 영상 건너뛰기</string>
     <string name="setup_switch_skip_intro_desc">EA 로고, 인트로 및 메뉴 전 다른 영상을 건너뛰고 바로 로딩합니다. 두 게임 모두, 모드 포함.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">터치 조작</string>
+    <string name="shortcuts_card_desc">게임 안에 나만의 단축키 패널을 만드세요: 버튼을 추가하거나 삭제하고, Ctrl·Shift·Alt와 함께 누를 키를 고르고, 버튼을 원하는 위치로 끌어다 놓고, 크기와 투명도를 조절합니다.</string>
+    <string name="shortcuts_switch_title">단축키 패널 표시</string>
+    <string name="shortcuts_switch_desc">플레이 중 전장 위에 단축키 버튼을 표시합니다. 화면 위쪽의 작은 ⌨ 버튼으로 숨기거나 보일 수 있습니다. 전체 배치는 아래 편집기에서 바꿉니다.</string>
+    <string name="shortcuts_button_configure">터치 조작 설정</string>
+    <string name="shortcuts_toggle_handle">단축키 버튼 숨기기/표시</string>
+    <string name="shortcuts_editor_hint">버튼을 눌러 선택한 다음 원하는 위치로 끌어 놓으세요</string>
+    <string name="shortcuts_editor_caption">게임 화면 미리보기</string>
+    <string name="shortcuts_action_add">추가</string>
+    <string name="shortcuts_action_edit">편집</string>
+    <string name="shortcuts_action_delete">삭제</string>
+    <string name="shortcuts_action_defaults">기본값</string>
+    <string name="shortcuts_action_save">저장</string>
+    <string name="shortcuts_action_export">내보내기</string>
+    <string name="shortcuts_action_import">가져오기</string>
+    <string name="shortcuts_size_label" formatted="true">버튼 크기: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">버튼 불투명도: %1$d%%</string>
+    <string name="shortcuts_select_first">먼저 버튼을 선택하세요</string>
+    <string name="shortcuts_defaults_confirm">모든 버튼을 기본 배치로 바꿀까요?</string>
+    <string name="shortcuts_ok">확인</string>
+    <string name="shortcuts_cancel">취소</string>
+    <string name="shortcuts_discard">버리기</string>
+    <string name="shortcuts_saved">단축키 패널을 저장했습니다</string>
+    <string name="shortcuts_exported">배치를 내보냈습니다</string>
+    <string name="shortcuts_export_failed">배치를 내보내지 못했습니다</string>
+    <string name="shortcuts_imported">배치를 가져왔습니다 — 유지하려면 저장을 누르세요</string>
+    <string name="shortcuts_import_failed">단축키 배치 파일이 아닙니다</string>
+    <string name="shortcuts_no_file_picker">사용할 수 있는 파일 관리자가 없습니다</string>
+    <string name="shortcuts_field_label">이름 (선택)</string>
+    <string name="shortcuts_field_label_hint">버튼에 표시됩니다</string>
+    <string name="shortcuts_field_key">키</string>
+    <string name="shortcuts_field_modifiers">함께 누를 키</string>
+    <string name="shortcuts_dialog_add_title">새 버튼</string>
+    <string name="shortcuts_dialog_edit_title">버튼 편집</string>
+    <string name="shortcuts_unsaved_title">저장하지 않은 변경 사항</string>
+    <string name="shortcuts_unsaved_message">단축키 패널 변경 사항을 저장할까요?</string>
 </resources>
