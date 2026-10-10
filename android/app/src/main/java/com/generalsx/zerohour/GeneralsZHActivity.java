@@ -402,6 +402,86 @@ public class GeneralsZHActivity extends SDLActivity {
         }
 
         super.onCreate(savedInstanceState);
+        setUpShortcutOverlay();
+    }
+
+    // GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (Setup -> Touch
+    // controls): on-screen buttons that press keyboard keys. It sits in mLayout just above
+    // the SDL surface and claims only touches that start on one of its buttons, so map
+    // touch (tap, drag, pinch) reaches the surface exactly as before. Off by default; with
+    // the switch off nothing is added at all. See ShortcutOverlay.
+    private ShortcutOverlay shortcutOverlay;
+
+    private void setUpShortcutOverlay() {
+        if (mBrokenLibraries || mLayout == null) {
+            return;  // SDL showed its own error dialog; there is no game to add buttons to
+        }
+        shortcutOverlay = new ShortcutOverlay(this, mLayout, new ShortcutOverlay.KeySink() {
+            @Override public void keyDown(int keyCode) { onNativeKeyDown(keyCode); }
+            @Override public void keyUp(int keyCode) { onNativeKeyUp(keyCode); }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Re-read every time: the layout or the switch may have changed in Setup meanwhile.
+        if (shortcutOverlay != null) {
+            shortcutOverlay.reload();
+        }
+        setLowLatencyWifi(true);
+    }
+
+    @Override
+    protected void onPause() {
+        // Never leave a key held down while the game is in the background.
+        if (shortcutOverlay != null) {
+            shortcutOverlay.releaseAll();
+        }
+        setLowLatencyWifi(false);
+        super.onPause();
+    }
+
+    // GeneralsX @performance Android port 10/10/2026 Lag in network games between phones.
+    // Phones put Wi-Fi into power-save between transmissions: the access point holds incoming
+    // packets until the radio wakes for its next beacon, so a game packet can wait 100-300 ms
+    // before the engine sees it. Lockstep play waits for every player's packets each turn, so
+    // those delays show up as stutter and "slow connection" in LAN and online games alike.
+    // A WifiLock in low-latency mode (API 29+; high-performance mode on Android 9) turns that
+    // power saving off. It is held only while this activity is resumed -- the system honours
+    // low-latency mode only for a foreground app with the screen on anyway -- and released on
+    // pause, so it costs no battery in the background. Packets themselves are untouched.
+    private WifiManager.WifiLock lowLatencyWifiLock;
+
+    @SuppressWarnings("deprecation") // WIFI_MODE_FULL_HIGH_PERF: the Android 9 fallback
+    private void setLowLatencyWifi(boolean held) {
+        try {
+            if (lowLatencyWifiLock == null) {
+                if (!held) {
+                    return;
+                }
+                WifiManager wifi = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                if (wifi == null) {
+                    return;
+                }
+                int mode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    ? WifiManager.WIFI_MODE_FULL_LOW_LATENCY
+                    : WifiManager.WIFI_MODE_FULL_HIGH_PERF;
+                lowLatencyWifiLock = wifi.createWifiLock(mode, "GeneralsZH-low-latency");
+                lowLatencyWifiLock.setReferenceCounted(false);
+            }
+            if (held) {
+                if (!lowLatencyWifiLock.isHeld()) {
+                    lowLatencyWifiLock.acquire();
+                    Log.i(TAG, "low-latency Wi-Fi lock held");
+                }
+            } else if (lowLatencyWifiLock.isHeld()) {
+                lowLatencyWifiLock.release();
+                Log.i(TAG, "low-latency Wi-Fi lock released");
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "low-latency Wi-Fi lock unavailable", e);
+        }
     }
 
     // GeneralsX @bugfix Android port 02/08/2026 A tester reported the camera

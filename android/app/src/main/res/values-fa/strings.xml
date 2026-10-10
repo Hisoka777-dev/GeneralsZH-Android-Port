@@ -345,4 +345,42 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">اعمال اندازه رابط کاربری</string>
     <string name="setup_interface_scale_help">رابط کاربری بازی را بدون تغییر فایل‌های آن بزرگ می‌کند: نوار کنترل همراه رادار از لبه پایین به بالا بزرگ می‌شود و نوار قدرت‌های ژنرال، چت، پیام‌های رویداد، فهرست بازیکنان، منوی بازی با ذخیره/بارگذاری و تنظیمات و دکمه‌های منوی اصلی از جای خود بزرگ می‌شوند. هیچ چیز از صفحه بیرون نمی‌رود: هر بخش فقط تا جایی که جا شود بزرگ می‌شود، پس در گوشی عریض نوار کنترل به‌جای پهن‌تر شدن بلندتر می‌شود و میدان نبرد بالای آن کوتاه‌تر. همراه با اندازه متن منو کار می‌کند. در اجرای بعدی بازی اعمال می‌شود.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">کنترل لمسی</string>
+    <string name="shortcuts_card_desc">پنل میانبر خودتان را در بازی بسازید: دکمه اضافه یا حذف کنید، کلیدهای صفحه‌کلید را همراه Ctrl، Shift یا Alt انتخاب کنید، هر دکمه را به جای دلخواه روی صفحه بکشید و اندازه و شفافیت دکمه‌ها را تنظیم کنید.</string>
+    <string name="shortcuts_switch_title">نمایش پنل میانبر</string>
+    <string name="shortcuts_switch_desc">دکمه‌های میانبر شما را هنگام بازی روی میدان نبرد نشان می‌دهد. دکمه کوچک ⌨ بالای صفحه آن‌ها را پنهان و آشکار می‌کند. چیدمان کامل در ویرایشگر زیر تنظیم می‌شود.</string>
+    <string name="shortcuts_button_configure">پیکربندی کنترل لمسی</string>
+    <string name="shortcuts_toggle_handle">پنهان یا نمایش دکمه‌های میانبر</string>
+    <string name="shortcuts_editor_hint">روی یک دکمه بزنید تا انتخاب شود، سپس آن را به جای دلخواه بکشید</string>
+    <string name="shortcuts_editor_caption">پیش‌نمایش صفحه بازی</string>
+    <string name="shortcuts_action_add">افزودن</string>
+    <string name="shortcuts_action_edit">ویرایش</string>
+    <string name="shortcuts_action_delete">حذف</string>
+    <string name="shortcuts_action_defaults">پیش‌فرض</string>
+    <string name="shortcuts_action_save">ذخیره</string>
+    <string name="shortcuts_action_export">خروجی</string>
+    <string name="shortcuts_action_import">ورودی</string>
+    <string name="shortcuts_size_label" formatted="true">اندازه دکمه: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">شفافیت دکمه: %1$d%%</string>
+    <string name="shortcuts_select_first">ابتدا یک دکمه انتخاب کنید</string>
+    <string name="shortcuts_defaults_confirm">همه دکمه‌ها با چیدمان پیش‌فرض جایگزین شوند؟</string>
+    <string name="shortcuts_ok">تأیید</string>
+    <string name="shortcuts_cancel">لغو</string>
+    <string name="shortcuts_discard">رها کردن</string>
+    <string name="shortcuts_saved">پنل میانبر ذخیره شد</string>
+    <string name="shortcuts_exported">چیدمان خروجی گرفته شد</string>
+    <string name="shortcuts_export_failed">خروجی گرفتن از چیدمان ممکن نشد</string>
+    <string name="shortcuts_imported">چیدمان وارد شد — برای نگه‌داشتن آن ذخیره را بزنید</string>
+    <string name="shortcuts_import_failed">این فایل چیدمان میانبر نیست</string>
+    <string name="shortcuts_no_file_picker">هیچ مدیر فایلی در دسترس نیست</string>
+    <string name="shortcuts_field_label">نام (اختیاری)</string>
+    <string name="shortcuts_field_label_hint">روی دکمه نمایش داده می‌شود</string>
+    <string name="shortcuts_field_key">کلید</string>
+    <string name="shortcuts_field_modifiers">همراه با</string>
+    <string name="shortcuts_dialog_add_title">دکمه جدید</string>
+    <string name="shortcuts_dialog_edit_title">ویرایش دکمه</string>
+    <string name="shortcuts_unsaved_title">تغییرات ذخیره‌نشده</string>
+    <string name="shortcuts_unsaved_message">تغییرات پنل میانبر ذخیره شود؟</string>
 </resources>

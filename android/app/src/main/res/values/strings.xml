@@ -352,4 +352,42 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">Apply Interface Size</string>
     <string name="setup_interface_scale_help">Makes the in-game interface bigger, without touching the game\'s files: the control bar with the radar grows up from the bottom, and the generals\' powers bar, chat, event messages, player list, in-game menu with Save/Load and Options, and the main menu\'s buttons grow from where they sit. Nothing is pushed off the screen: each part grows only as far as it fits, so the control bar gets taller rather than wider on a wide phone, and the battlefield above it gets shorter. Works together with Menu Text Size. Takes effect the next time you launch the game.</string>
+
+    <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel (ShortcutEditorActivity, ShortcutOverlay). -->
+    <string name="shortcuts_card_title">Touch controls</string>
+    <string name="shortcuts_card_desc">Build your own shortcut panel inside the game: add or remove buttons, pick keyboard keys with Ctrl, Shift or Alt, drag each button where you want it on the screen, and set the buttons\' size and opacity.</string>
+    <string name="shortcuts_switch_title">Show shortcut panel</string>
+    <string name="shortcuts_switch_desc">Shows your custom shortcut buttons over the battlefield while you play. The small ⌨ button at the top of the screen hides and shows them. The full layout is edited below.</string>
+    <string name="shortcuts_button_configure">Configure touch controls</string>
+    <string name="shortcuts_toggle_handle">Hide or show shortcut buttons</string>
+    <string name="shortcuts_editor_hint">Tap a button to select it, then drag it where you want it</string>
+    <string name="shortcuts_editor_caption">Game screen preview</string>
+    <string name="shortcuts_action_add">Add</string>
+    <string name="shortcuts_action_edit">Edit</string>
+    <string name="shortcuts_action_delete">Delete</string>
+    <string name="shortcuts_action_defaults">Defaults</string>
+    <string name="shortcuts_action_save">Save</string>
+    <string name="shortcuts_action_export">Export</string>
+    <string name="shortcuts_action_import">Import</string>
+    <string name="shortcuts_size_label" formatted="true">Button size: %1$d%%</string>
+    <string name="shortcuts_opacity_label" formatted="true">Button opacity: %1$d%%</string>
+    <string name="shortcuts_select_first">Select a button first</string>
+    <string name="shortcuts_defaults_confirm">Replace all buttons with the default layout?</string>
+    <string name="shortcuts_ok">OK</string>
+    <string name="shortcuts_cancel">Cancel</string>
+    <string name="shortcuts_discard">Discard</string>
+    <string name="shortcuts_saved">Shortcut panel saved</string>
+    <string name="shortcuts_exported">Layout exported</string>
+    <string name="shortcuts_export_failed">Could not export the layout</string>
+    <string name="shortcuts_imported">Layout imported — press Save to keep it</string>
+    <string name="shortcuts_import_failed">That file is not a shortcut layout</string>
+    <string name="shortcuts_no_file_picker">No file manager is available</string>
+    <string name="shortcuts_field_label">Name (optional)</string>
+    <string name="shortcuts_field_label_hint">Shown on the button</string>
+    <string name="shortcuts_field_key">Key</string>
+    <string name="shortcuts_field_modifiers">Hold together with</string>
+    <string name="shortcuts_dialog_add_title">New button</string>
+    <string name="shortcuts_dialog_edit_title">Edit button</string>
+    <string name="shortcuts_unsaved_title">Unsaved changes</string>
+    <string name="shortcuts_unsaved_message">Save your changes to the shortcut panel?</string>
 </resources>

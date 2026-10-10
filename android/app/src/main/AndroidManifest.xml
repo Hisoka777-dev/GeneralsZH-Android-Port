@@ -63,6 +63,12 @@
          LAN lobby/match is active, so Wi-Fi drivers don't filter LAN broadcasts. -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
+    <!-- GeneralsX @performance Android port 10/10/2026 A WifiManager.WifiLock in low-latency
+         mode keeps Wi-Fi power saving from batching game packets while the game is on screen
+         (see GeneralsZHActivity). Acquiring any WifiLock requires WAKE_LOCK, a normal
+         install-time permission. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <!-- GeneralsX @bugfix Android port 10/07/2026 the sign-in flow backgrounds
          this app for the whole browser round-trip (open playgenerals.online,
          pick Steam/Discord/GameReplays, come back) — on some OEM battery
@@ -163,6 +169,15 @@
         <activity
             android:name=".ReplayCheckActivity"
             android:exported="false"
+            android:theme="@style/Theme.GeneralsZHSettings"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
+        <!-- GeneralsX @feature Android port 10/10/2026 Custom shortcut panel editor.
+             Landscape like the game, so the preview matches where buttons land. -->
+        <activity
+            android:name=".ShortcutEditorActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.GeneralsZHSettings"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 

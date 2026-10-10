@@ -433,6 +433,8 @@ public class SetupActivity extends Activity {
         UiKit.button(page, UiKit.BTN_PRIMARY, R.drawable.ic_gzh_play,
             getString(R.string.setup_button_launch_game), this::onLaunchGame);
 
+        buildTouchControlsSection(page);
+
         LinearLayout folder = UiKit.card(page);
         UiKit.sectionHeader(folder, R.drawable.ic_gzh_folder,
             getString(R.string.setup_card_game_folder), false);
@@ -457,6 +459,28 @@ public class SetupActivity extends Activity {
         // bury under settings most players never touch.
         buildGeneralsOnlineSection(page);
         buildUpdatesSection(page);
+    }
+
+    // ------------------------------------------------------------ Touch controls
+
+    // GeneralsX @feature Android port 10/10/2026 Custom shortcut panel: on-screen buttons
+    // that press the game's keyboard hotkeys. The switch shows or hides the panel in game;
+    // the button opens the editor. See ShortcutLayout / ShortcutOverlay.
+    private void buildTouchControlsSection(LinearLayout page) {
+        LinearLayout card = UiKit.card(page);
+        UiKit.sectionHeader(card, R.drawable.ic_gzh_sliders,
+            getString(R.string.shortcuts_card_title), false);
+        UiKit.divider(card);
+        UiKit.supporting(card, getString(R.string.shortcuts_card_desc));
+
+        SwitchCompat show = UiKit.switchRow(card,
+            getString(R.string.shortcuts_switch_title), getString(R.string.shortcuts_switch_desc));
+        show.setChecked(ShortcutLayout.isEnabled(this));
+        show.setOnCheckedChangeListener((button, checked) -> ShortcutLayout.setEnabled(this, checked));
+
+        UiKit.button(card, UiKit.BTN_PRIMARY, R.drawable.ic_gzh_sliders,
+            getString(R.string.shortcuts_button_configure),
+            () -> startActivity(new Intent(this, ShortcutEditorActivity.class)));
     }
 
     // ------------------------------------------------------------ Updates
