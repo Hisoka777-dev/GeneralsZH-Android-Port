@@ -5699,10 +5699,11 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 		switch( commandButton->getCommandType() )
 		{
 			case GUI_COMMAND_COMBATDROP:
-#if RETAIL_COMPATIBLE_CRC
+				// GeneralsX @bugfix Android port 10/10/2026 The null-target guard was retail-only and
+				// nothing replaced it in this port's mode (RETAIL_COMPATIBLE_CRC 0): a script or AI
+				// command with no target object dereferenced null. Do what the retail build does.
 				if (!obj)
 					return;
-#endif
 
 				if( ai )
 				{
@@ -5711,10 +5712,11 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 				return;
 			case GUI_COMMAND_SPECIAL_POWER:
 			{
-#if RETAIL_COMPATIBLE_CRC
+				// GeneralsX @bugfix Android port 10/10/2026 The null-target guard was retail-only and
+				// nothing replaced it in this port's mode (RETAIL_COMPATIBLE_CRC 0): a script or AI
+				// command with no target object dereferenced null. Do what the retail build does.
 				if (!obj)
 					return;
-#endif
 
 				if( commandButton->getSpecialPowerTemplate() )
 				{
