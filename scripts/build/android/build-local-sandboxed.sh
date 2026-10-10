@@ -123,8 +123,9 @@ mkdir -p "build/${PRESET}/_deps"
 rm -rf "build/${PRESET}/_deps/sdl3-src"
 ln -sfn "${FETCHCONTENT_SRC}/SDL3-src" "build/${PRESET}/_deps/sdl3-src"
 
-echo "=== [7/8] Build z_generals + DXVK d3d8/d3d9 + hooks ==="
-cmake --build "build/${PRESET}" --target z_generals dxvk_d3d8_install \
+echo "=== [7/8] Build z_generals + g_generals + DXVK d3d8/d3d9 + hooks ==="
+# GeneralsX @build Android port 04/10/2026 g_generals: the base game, libgenerals.so.
+cmake --build "build/${PRESET}" --target z_generals g_generals dxvk_d3d8_install \
   main_hook file_redirect_hook gsl_alloc_hook hook_impl -- -k 0 2>&1 | tee logs/build_android.log
 ccache --show-stats
 
@@ -147,7 +148,10 @@ done
 # found.
 dxvk_strings="$(strings "build/${PRESET}/libdxvk_d3d9.so")"
 grep -q "SDL3 WSI:" <<< "$dxvk_strings" || { echo "libdxvk_d3d9.so built without SDL3 WSI"; exit 1; }
-echo "Artifacts verified: AArch64 libmain.so + DXVK with SDL3 WSI"
+# GeneralsX @build Android port 04/10/2026 The base game's engine, built by the same command.
+BASE_GAME_LIB="build/${PRESET}/Generals/Code/Main/libgenerals.so"
+[ -f "$BASE_GAME_LIB" ] || { echo "libgenerals.so not found at $BASE_GAME_LIB"; exit 1; }
+echo "Artifacts verified: AArch64 libmain.so + libgenerals.so + DXVK with SDL3 WSI"
 
 # Strip debug symbols from everything except the two DXVK libraries before
 # packaging: android/app/build.gradle deliberately keeps libdxvk_d3d8/d3d9.so
@@ -164,13 +168,14 @@ STRIP="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip"
 if [ -n "${GX_KEEP_SYMBOLS_DIR:-}" ] && [ -f "$GAME_LIB" ]; then
   mkdir -p "$GX_KEEP_SYMBOLS_DIR"
   case "${GX_EXTRA_CMAKE:-}" in
-    *SAGE_HIGH_FPS_SIM=ON*) SYM_NAME="libmain60.sym.so" ;;
-    *) SYM_NAME="libmain.sym.so" ;;
+    *SAGE_HIGH_FPS_SIM=ON*) HZ_SUFFIX="60" ;;
+    *) HZ_SUFFIX="" ;;
   esac
-  "$STRIP" --strip-debug -o "$GX_KEEP_SYMBOLS_DIR/$SYM_NAME" "$GAME_LIB"
-  echo "Kept symbol table: $GX_KEEP_SYMBOLS_DIR/$SYM_NAME"
+  "$STRIP" --strip-debug -o "$GX_KEEP_SYMBOLS_DIR/libmain${HZ_SUFFIX}.sym.so" "$GAME_LIB"
+  "$STRIP" --strip-debug -o "$GX_KEEP_SYMBOLS_DIR/libgenerals${HZ_SUFFIX}.sym.so" "$BASE_GAME_LIB"
+  echo "Kept symbol tables: $GX_KEEP_SYMBOLS_DIR/lib{main,generals}${HZ_SUFFIX}.sym.so"
 fi
-for lib in "$GAME_LIB" \
+for lib in "$GAME_LIB" "$BASE_GAME_LIB" \
            "build/${PRESET}/_deps/sdl3-build/libSDL3.so" \
            "build/${PRESET}/_deps/sdl3_image-build/libSDL3_image.so" \
            "build/${PRESET}/_deps/openal_soft-build/libopenal.so" \

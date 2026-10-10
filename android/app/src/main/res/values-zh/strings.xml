@@ -6,6 +6,16 @@
     <!-- SetupActivity: title / fallback -->
     <string name="setup_window_title">GeneralsZH 设置</string>
     <string name="setup_title">Command &amp; Conquer Generals: Zero Hour</string>
+    <string name="setup_title_generals">Command &amp; Conquer Generals</string>
+    <string name="setup_card_game">游戏</string>
+    <string name="setup_game_generals">Generals</string>
+    <string name="setup_game_zero_hour">Zero Hour</string>
+    <string name="setup_game_desc">每个游戏都有自己的文件夹、存档、地图和设置文件。图形和界面设置两个游戏通用。</string>
+    <string name="setup_status_folder_invalid_generals">状态：此文件夹中没有 INI.big — 请选择原版 Generals 的文件夹。\n</string>
+    <string name="setup_status_folder_is_zero_hour">状态：这是 Zero Hour 文件夹（包含 INIZH.big）。Generals 需要原版游戏的文件夹。\n</string>
+    <string name="setup_sim_rate_30_desc_generals">30 Hz 是原版游戏的频率。在 PC 上录制的回放可以用它播放。</string>
+    <string name="setup_sim_rate_60_desc_generals">60 Hz 将模拟计算频率提高一倍，动作更流畅。每秒工作量翻倍，因此较慢的设备可能无法全速运行。</string>
+    <string name="setup_folder_issue_generals_incomplete">缺少 Generals 游戏数据：%1$s</string>
     <string name="setup_subtitle">Android 设置</string>
     <string name="setup_fallback_warning">正常的设置界面加载失败（%1$s）。已显示简化版界面，方便你仍能访问日志或游戏文件夹。</string>
 
@@ -101,6 +111,8 @@
     <string name="setup_switch_touch_debug_desc">在游戏画面上绘制触摸层的状态：当前手势、手指位置、引擎认为指针所在的位置，以及镜头滚动锚点。报告操作问题时请开启——地图自行移动、幽灵建筑出现在错误位置、技能瞄准到你没有触摸的地方。(gx_touch_debug.txt)</string>
     <string name="setup_switch_gx_perf">性能摘要</string>
     <string name="setup_switch_gx_perf_desc">每秒添加一行简短记录，显示每帧时间花在哪里（雷达、音频、网络、游戏逻辑、渲染）。整个游玩会话保持开启也是安全的 —— 用于 FPS/卡顿报告时打开。(gx_perf.txt)</string>
+    <string name="setup_switch_gpu_timer">GPU 帧耗时测量</string>
+    <string name="setup_switch_gpu_timer_desc">测量 GPU 渲染每一帧的耗时并加入性能摘要，用于判断瓶颈在 GPU 还是 CPU。仅限 OpenGL ES。部分 Mali 驱动会因此崩溃，除非被要求，否则请保持关闭。(gx_gles_gputimer.txt)</string>
     <string name="setup_switch_gx_audio_trace">音频日志</string>
     <string name="setup_switch_gx_audio_trace_desc">记录声音系统的运行情况：音乐与语音的缓冲区水平、过场动画音频，以及每一个启动或停止的音源。如果你报告了声音缺失、断续或无声后被要求提供音频日志，请打开此项。(gx_audio_trace.txt)</string>
     <string name="setup_button_download_langpack">下载语言包</string>
@@ -160,9 +172,7 @@
     <!-- LogViewerActivity -->
     <string name="logviewer_title">日志</string>
     <string name="logviewer_button_clear">清除日志</string>
-    <string name="logviewer_button_copy">复制</string>
     <string name="logviewer_button_share">分享</string>
-    <string name="logviewer_toast_copied">已复制到剪贴板。</string>
     <string name="logviewer_section_crash_log">=== crash.log（原生崩溃处理器，内部存储）===\n</string>
     <string name="logviewer_crash_log_absent">（不存在 —— 自安装以来未记录到原生崩溃，或该应用从未启动到加载库文件之后的阶段）</string>
     <string name="logviewer_section_stderr_log">=== generals-stderr.log（引擎日志，外部存储）===\n</string>
@@ -345,4 +355,13 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">应用界面大小</string>
     <string name="setup_interface_scale_help">在不修改游戏文件的情况下放大游戏界面：带雷达的底部控制栏从屏幕底边向上增高，将军技能栏、聊天、事件消息、玩家列表、带保存/读取和选项的游戏菜单以及主菜单按钮从各自所在的位置放大。不会有任何内容超出屏幕：每个部分只放大到能容纳为止，因此在宽屏手机上控制栏会变高而不是变宽，上方的战场则相应变矮。可与“菜单文字大小”一起使用。将在下次启动游戏时生效。</string>
+    <!-- GeneralsX @feature Android port 04/10/2026 Game folder found below the pick -->
+    <string name="setup_toast_folder_found_inside">游戏位于子文件夹中，已改用：%1$s</string>
+    <string name="setup_card_controls">操控</string>
+    <string name="setup_switch_mouse_mode">鼠标和触控板</string>
+    <string name="setup_switch_mouse_mode_desc">使用指针代替点按：连接的鼠标与电脑上一样使用；没有鼠标时，手指像笔记本触控板一样移动光标。关闭：直接用触摸操控游戏。</string>
+    <string name="setup_mouse_mode_help">触控板：移动手指即可移动光标。轻点 = 左键单击，轻点两次 = 双击，轻点后再按住拖动 = 框选。双指轻点 = 右键单击。双指 = 滚动地图，捏合 = 缩放。下次启动游戏时生效。左右键的作用仍由游戏自己的“备用鼠标设置”选项决定。 在菜单、大厅和对话框中，手指照常直接点按。</string>
+    <string name="setup_cursor_size_label">光标大小：%1$d%%</string>
+    <string name="setup_switch_skip_intro">跳过开场动画</string>
+    <string name="setup_switch_skip_intro_desc">跳过 EA 标志、开场动画和菜单前的其他视频，游戏直接开始加载。适用于两款游戏，包括模组。</string>
 </resources>

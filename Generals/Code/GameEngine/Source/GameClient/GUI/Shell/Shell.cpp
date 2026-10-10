@@ -425,7 +425,7 @@ void Shell::pop()
 	* from the shutdown() for the screen, it will be immediately popped off
 	* the stack */
 //-------------------------------------------------------------------------------------------------
-void Shell::popImmediate()
+void Shell::popImmediate( Bool reinitNewTop )
 {
 	WindowLayout *screen = top();
 
@@ -449,7 +449,7 @@ void Shell::popImmediate()
 	screen->runShutdown( &immediatePop );
 
 	// pop the screen of the stack
-	doPop( FALSE );
+	doPop( !reinitNewTop );
 
 	if (TheIMEManager)
 		TheIMEManager->detach();
@@ -664,6 +664,19 @@ void Shell::doPush( AsciiString layoutFile )
 	// create new layout and load from window manager
 	newScreen = TheWindowManager->winCreateLayout( layoutFile );
 	DEBUG_ASSERTCRASH( newScreen != nullptr, ("Shell unable to load pending push layout") );
+
+	// GeneralsX @bugfix Android port 11/07/2026 DEBUG_ASSERTCRASH doesn't
+	// actually stop execution in a release build -- a bad/missing .wnd file
+	// (confirmed via a real device crash log: winCreateLayout returned 0x0,
+	// then this function segfaulted at newScreen->runInit() a few lines
+	// below) used to take the whole game down instead of just failing to
+	// open that one screen. Bail out cleanly instead.
+	if (newScreen == nullptr)
+	{
+		fprintf(stderr, "ERROR: Shell::doPush() - failed to load layout '%s', aborting this push\n", layoutFile.str());
+		fflush(stderr);
+		return;
+	}
 
 	// link screen to the top
 	linkScreen( newScreen );

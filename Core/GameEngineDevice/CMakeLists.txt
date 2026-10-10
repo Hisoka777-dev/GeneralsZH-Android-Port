@@ -73,6 +73,7 @@ set(GAMEENGINEDEVICE_SRC
     Include/W3DDevice/GameClient/W3DTerrainVisual.h
     Include/W3DDevice/GameClient/W3DTreeBuffer.h
     Include/W3DDevice/GameClient/W3DVideoBuffer.h
+    Include/W3DDevice/GameClient/W3DTouchButtonImages.h
     Include/W3DDevice/GameClient/W3DView.h
 #    Include/W3DDevice/GameClient/W3DVolumetricShadow.h
     Include/W3DDevice/GameClient/W3DWater.h
@@ -171,6 +172,7 @@ set(GAMEENGINEDEVICE_SRC
     Source/W3DDevice/GameClient/W3DTerrainBackground.cpp
     Source/W3DDevice/GameClient/W3DTerrainTracks.cpp
     Source/W3DDevice/GameClient/W3DTerrainVisual.cpp
+    Source/W3DDevice/GameClient/W3DTouchButtonImages.cpp
     Source/W3DDevice/GameClient/W3DTreeBuffer.cpp
     Source/W3DDevice/GameClient/W3DVideoBuffer.cpp
     Source/W3DDevice/GameClient/W3DView.cpp
@@ -220,6 +222,24 @@ add_library(corei_gameenginedevice_private INTERFACE)
 add_library(corei_gameenginedevice_public INTERFACE)
 
 target_sources(corei_gameenginedevice_private INTERFACE ${GAMEENGINEDEVICE_SRC})
+
+# GeneralsX @build Android port 04/10/2026 The SDL3 platform layer, shared by both games (it was
+# Zero Hour's; the base game had an older desktop-only copy). Game differences are RTS_ZEROHOUR /
+# RTS_GENERALS branches inside the files.
+if(NOT WIN32)
+    target_sources(corei_gameenginedevice_private INTERFACE
+        Include/SDL3GameEngine.h
+        Include/SDL3Device/GameClient/AndroidTextEditor.h
+        Include/SDL3Device/GameClient/SDL3Keyboard.h
+        Include/SDL3Device/GameClient/SDL3Mouse.h
+        Include/SDL3Device/GameClient/TouchInput.h
+        Source/SDL3GameEngine.cpp
+        Source/SDL3Device/GameClient/AndroidTextEditor.cpp
+        Source/SDL3Device/GameClient/SDL3Keyboard.cpp
+        Source/SDL3Device/GameClient/SDL3Mouse.cpp
+        Source/SDL3Device/GameClient/TouchInput.cpp
+    )
+endif()
 
 target_include_directories(corei_gameenginedevice_public INTERFACE
     Include

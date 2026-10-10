@@ -6,6 +6,16 @@
     <!-- SetupActivity: title / fallback -->
     <string name="setup_window_title">Ajustes de GeneralsZH</string>
     <string name="setup_title">Command &amp; Conquer Generals: Zero Hour</string>
+    <string name="setup_title_generals">Command &amp; Conquer Generals</string>
+    <string name="setup_card_game">Juego</string>
+    <string name="setup_game_generals">Generals</string>
+    <string name="setup_game_zero_hour">Zero Hour</string>
+    <string name="setup_game_desc">Cada juego tiene su propia carpeta, partidas guardadas, mapas y archivo de ajustes. Las opciones de gráficos e interfaz son comunes a ambos.</string>
+    <string name="setup_status_folder_invalid_generals">Estado: esta carpeta NO contiene INI.big — elige la carpeta del Generals original.\n</string>
+    <string name="setup_status_folder_is_zero_hour">Estado: esta es una carpeta de Zero Hour (contiene INIZH.big). Generals necesita la carpeta del juego original.\n</string>
+    <string name="setup_sim_rate_30_desc_generals">30 Hz es la frecuencia del juego original. Las repeticiones grabadas en PC se reproducen con ella.</string>
+    <string name="setup_sim_rate_60_desc_generals">60 Hz calcula la simulación el doble de veces, con movimiento más fluido. Duplica el trabajo por segundo, así que un dispositivo lento puede ir por debajo de la velocidad normal.</string>
+    <string name="setup_folder_issue_generals_incomplete">Faltan datos del juego Generals:%1$s</string>
     <string name="setup_subtitle">Ajustes de Android</string>
     <string name="setup_fallback_warning">La interfaz normal de ajustes no se pudo cargar (%1$s). Se muestra una versión básica para que igualmente puedas acceder a los registros o a la carpeta del juego.</string>
 
@@ -101,6 +111,8 @@
     <string name="setup_switch_touch_debug_desc">Dibuja sobre el juego el estado de la capa táctil: gesto actual, dónde está tu dedo, dónde cree el motor que está el puntero y el ancla de desplazamiento de la cámara. Actívalo para informar de problemas de control: mapa que se desplaza solo, edificio fantasma en el lugar equivocado, habilidad que apunta a donde no tocaste. (gx_touch_debug.txt)</string>
     <string name="setup_switch_gx_perf">Resumen de rendimiento</string>
     <string name="setup_switch_gx_perf_desc">Añade una línea corta por segundo mostrando en qué se gasta el tiempo de cuadro (radar, audio, red, lógica del juego, renderizado). Seguro dejarlo activado toda la sesión — actívalo para informes de FPS/ralentización. (gx_perf.txt)</string>
+    <string name="setup_switch_gpu_timer">Medición de tiempo de GPU</string>
+    <string name="setup_switch_gpu_timer_desc">Mide cuánto tarda la GPU en cada fotograma y lo añade al resumen de rendimiento, para saber si el límite es la GPU o la CPU. Solo OpenGL ES. Algunos controladores Mali se bloquean con ella; déjala desactivada salvo que te lo pidan. (gx_gles_gputimer.txt)</string>
     <string name="setup_switch_gx_audio_trace">Registro de audio</string>
     <string name="setup_switch_gx_audio_trace_desc">Registra lo que hace el sistema de sonido: nivel de los búferes de música y voz, audio de los vídeos y cada fuente que se inicia o se detiene. Actívalo si te piden un registro de audio tras informar de sonido ausente, entrecortado o mudo. (gx_audio_trace.txt)</string>
     <string name="setup_button_download_langpack">Descargar paquete de idioma</string>
@@ -160,9 +172,7 @@
     <!-- LogViewerActivity -->
     <string name="logviewer_title">Registros</string>
     <string name="logviewer_button_clear">Borrar registros</string>
-    <string name="logviewer_button_copy">Copiar</string>
     <string name="logviewer_button_share">Compartir</string>
-    <string name="logviewer_toast_copied">Copiado al portapapeles.</string>
     <string name="logviewer_section_crash_log">=== crash.log (gestor de fallos nativo, almacenamiento interno) ===\n</string>
     <string name="logviewer_crash_log_absent">(no presente — no se registró ningún fallo nativo desde la instalación, o la app nunca se ha ejecutado más allá de cargar la biblioteca)</string>
     <string name="logviewer_section_stderr_log">=== generals-stderr.log (registro del motor, almacenamiento externo) ===\n</string>
@@ -345,4 +355,13 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">Aplicar tamaño de la interfaz</string>
     <string name="setup_interface_scale_help">Agranda la interfaz del juego sin tocar sus archivos: la barra de control con el radar crece hacia arriba desde el borde inferior, y la barra de poderes del general, el chat, los mensajes de eventos, la lista de jugadores, el menú de partida con Guardar/Cargar y Opciones y los botones del menú principal crecen desde donde están. Nada sale de la pantalla: cada parte crece solo lo que cabe, así que en un teléfono ancho la barra de control se hace más alta en vez de más ancha, y el campo de batalla encima, más bajo. Funciona junto con el tamaño del texto del menú. Se aplica la próxima vez que inicies el juego.</string>
+    <!-- GeneralsX @feature Android port 04/10/2026 Game folder found below the pick -->
+    <string name="setup_toast_folder_found_inside">El juego estaba en una subcarpeta; se usa %1$s</string>
+    <string name="setup_card_controls">Controles</string>
+    <string name="setup_switch_mouse_mode">Ratón y panel táctil</string>
+    <string name="setup_switch_mouse_mode_desc">Un puntero en lugar de tocar donde quieres: un ratón conectado funciona como en PC y, sin él, tu dedo mueve el cursor como el panel táctil de un portátil. Desactivado: el juego se controla tocando directamente.</string>
+    <string name="setup_mouse_mode_help">Panel táctil: mueve un dedo para mover el cursor. Tocar = clic izquierdo, dos toques = doble clic, tocar y luego tocar y arrastrar = recuadro de selección. Tocar con dos dedos = clic derecho. Dos dedos = desplazar el mapa, pellizcar = zoom. Se aplica la próxima vez que inicie el juego. La opción del juego «Control alternativo del ratón» sigue decidiendo qué hacen los botones izquierdo y derecho. En los menús, la sala y los diálogos el dedo pulsa directamente, como siempre.</string>
+    <string name="setup_cursor_size_label">Tamaño del cursor: %1$d %%</string>
+    <string name="setup_switch_skip_intro">Omitir vídeos de introducción</string>
+    <string name="setup_switch_skip_intro_desc">Los logotipos de EA, la introducción y otros vídeos antes del menú se omiten; el juego carga directamente. Para ambos juegos, también con mods.</string>
 </resources>

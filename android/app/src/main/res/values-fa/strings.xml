@@ -6,6 +6,16 @@
     <!-- SetupActivity: title / fallback -->
     <string name="setup_window_title">تنظیمات GeneralsZH</string>
     <string name="setup_title">Command &amp; Conquer Generals: Zero Hour</string>
+    <string name="setup_title_generals">Command &amp; Conquer Generals</string>
+    <string name="setup_card_game">بازی</string>
+    <string name="setup_game_generals">Generals</string>
+    <string name="setup_game_zero_hour">Zero Hour</string>
+    <string name="setup_game_desc">هر بازی پوشه، ذخیره‌ها، نقشه‌ها و فایل تنظیمات خودش را دارد. تنظیمات گرافیک و رابط کاربری برای هر دو مشترک است.</string>
+    <string name="setup_status_folder_invalid_generals">وضعیت: این پوشه INI.big ندارد — پوشهٔ Generals اصلی را انتخاب کنید.\n</string>
+    <string name="setup_status_folder_is_zero_hour">وضعیت: این پوشهٔ Zero Hour است (INIZH.big دارد). Generals به پوشهٔ بازی اصلی نیاز دارد.\n</string>
+    <string name="setup_sim_rate_30_desc_generals">۳۰ هرتز نرخ بازی اصلی است. بازپخش‌های ضبط‌شده روی رایانه با آن پخش می‌شوند.</string>
+    <string name="setup_sim_rate_60_desc_generals">۶۰ هرتز شبیه‌سازی را دو برابر بیشتر محاسبه می‌کند و حرکت نرم‌تر است. کار در هر ثانیه دو برابر می‌شود، پس دستگاه کندتر ممکن است کمتر از سرعت کامل اجرا شود.</string>
+    <string name="setup_folder_issue_generals_incomplete">داده‌های بازی Generals وجود ندارد:%1$s</string>
     <string name="setup_subtitle">تنظیمات اندروید</string>
     <string name="setup_fallback_warning">رابط تنظیمات معمولی بارگذاری نشد (%1$s). یک رابط ساده جایگزین نمایش داده می‌شود تا همچنان بتوانید به گزارش‌ها/پوشه بازی دسترسی داشته باشید.</string>
 
@@ -101,6 +111,8 @@
     <string name="setup_switch_touch_debug_desc">وضعیت لایه لمسی را روی بازی می‌کشد: حرکت فعلی، جای انگشت شما، جایی که موتور بازی فکر می‌کند نشانگر است، و لنگر پیمایش دوربین. برای گزارش مشکلات کنترل این را روشن کنید — نقشه‌ای که خودش حرکت می‌کند، ساختمان شبح در جای اشتباه، توانایی که جایی را نشانه می‌رود که لمس نکرده‌اید. (gx_touch_debug.txt)</string>
     <string name="setup_switch_gx_perf">خلاصه عملکرد</string>
     <string name="setup_switch_gx_perf_desc">هر ثانیه یک خط کوتاه اضافه می‌کند که نشان می‌دهد زمان هر فریم صرف چه چیزی می‌شود (رادار، صدا، شبکه، منطق بازی، رندر). فعال نگه‌داشتن آن در کل نشست بازی بی‌خطر است — برای گزارش‌های FPS/کندی فعال کنید. (gx_perf.txt)</string>
+    <string name="setup_switch_gpu_timer">اندازه‌گیری زمان پردازنده گرافیکی</string>
+    <string name="setup_switch_gpu_timer_desc">مدت زمانی را که پردازنده گرافیکی برای هر فریم صرف می‌کند اندازه می‌گیرد و به خلاصه کارایی اضافه می‌کند تا معلوم شود محدودیت از پردازنده گرافیکی است یا پردازنده. فقط OpenGL ES. برخی درایورهای Mali با آن از کار می‌افتند، پس فقط در صورت درخواست روشنش کنید. (gx_gles_gputimer.txt)</string>
     <string name="setup_switch_gx_audio_trace">گزارش صدا</string>
     <string name="setup_switch_gx_audio_trace_desc">ثبت می‌کند سامانهٔ صدا چه می‌کند: میزان پر بودن بافرهای موسیقی و گفتار، صدای ویدیوها، و هر منبعی که آغاز یا متوقف می‌شود. اگر پس از گزارش صدای ناموجود، بریده‌بریده یا خاموش از شما گزارش صدا خواستند، این را روشن کنید. ‎(gx_audio_trace.txt)</string>
     <string name="setup_button_download_langpack">دانلود بستهٔ زبان</string>
@@ -160,9 +172,7 @@
     <!-- LogViewerActivity -->
     <string name="logviewer_title">گزارش‌ها</string>
     <string name="logviewer_button_clear">پاک کردن گزارش‌ها</string>
-    <string name="logviewer_button_copy">کپی</string>
     <string name="logviewer_button_share">اشتراک‌گذاری</string>
-    <string name="logviewer_toast_copied">در کلیپ‌بورد کپی شد.</string>
     <string name="logviewer_section_crash_log">=== crash.log (پردازشگر خرابی بومی، حافظه داخلی) ===\n</string>
     <string name="logviewer_crash_log_absent">(وجود ندارد — از زمان نصب هیچ خرابی بومی ثبت نشده، یا برنامه هرگز فراتر از بارگذاری کتابخانه اجرا نشده است)</string>
     <string name="logviewer_section_stderr_log">=== generals-stderr.log (گزارش موتور، حافظه خارجی) ===\n</string>
@@ -345,4 +355,13 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">اعمال اندازه رابط کاربری</string>
     <string name="setup_interface_scale_help">رابط کاربری بازی را بدون تغییر فایل‌های آن بزرگ می‌کند: نوار کنترل همراه رادار از لبه پایین به بالا بزرگ می‌شود و نوار قدرت‌های ژنرال، چت، پیام‌های رویداد، فهرست بازیکنان، منوی بازی با ذخیره/بارگذاری و تنظیمات و دکمه‌های منوی اصلی از جای خود بزرگ می‌شوند. هیچ چیز از صفحه بیرون نمی‌رود: هر بخش فقط تا جایی که جا شود بزرگ می‌شود، پس در گوشی عریض نوار کنترل به‌جای پهن‌تر شدن بلندتر می‌شود و میدان نبرد بالای آن کوتاه‌تر. همراه با اندازه متن منو کار می‌کند. در اجرای بعدی بازی اعمال می‌شود.</string>
+    <!-- GeneralsX @feature Android port 04/10/2026 Game folder found below the pick -->
+    <string name="setup_toast_folder_found_inside">بازی در یک پوشه زیرین بود؛ همان انتخاب شد: %1$s</string>
+    <string name="setup_card_controls">کنترل</string>
+    <string name="setup_switch_mouse_mode">ماوس و تاچ‌پد</string>
+    <string name="setup_switch_mouse_mode_desc">نشانگر به‌جای لمس جای دلخواه: ماوسِ وصل‌شده مثل رایانه کار می‌کند و بدون آن، انگشت شما نشانگر را مثل تاچ‌پد لپ‌تاپ حرکت می‌دهد. خاموش: بازی مستقیم با لمس کنترل می‌شود.</string>
+    <string name="setup_mouse_mode_help">تاچ‌پد: انگشت را حرکت دهید تا نشانگر حرکت کند. ضربه = کلیک چپ، دو ضربه = دابل‌کلیک، ضربه و سپس لمس و کشیدن = کادر انتخاب. ضربهٔ دوانگشتی = کلیک راست. دو انگشت = جابه‌جایی نقشه، نیشگون = بزرگ‌نمایی. از اجرای بعدی بازی اعمال می‌شود. گزینهٔ «تنظیم جایگزین ماوس» خود بازی همچنان تعیین می‌کند دکمه‌های چپ و راست چه کنند. در منوها، لابی و پنجره‌های گفتگو انگشت مثل همیشه مستقیم می‌زند.</string>
+    <string name="setup_cursor_size_label">اندازهٔ نشانگر: %1$d%%</string>
+    <string name="setup_switch_skip_intro">رد کردن ویدیوهای آغازین</string>
+    <string name="setup_switch_skip_intro_desc">لوگوهای EA، ویدیوی آغازین و ویدیوهای دیگر پیش از منو رد می‌شوند و بازی مستقیم بارگذاری می‌شود. برای هر دو بازی، با مادها هم.</string>
 </resources>

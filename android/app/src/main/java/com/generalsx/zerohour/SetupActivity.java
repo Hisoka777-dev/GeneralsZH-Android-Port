@@ -77,7 +77,59 @@ import java.io.File;
 public class SetupActivity extends Activity {
 
     static final String PREFS_NAME = "generalszh_setup";
+    static final String PREF_SKIP_INTRO = "skip_intro";
+
+    static boolean isSkipIntroEnabled(android.content.Context ctx) {
+        return ctx.getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_SKIP_INTRO, false);
+    }
     static final String PREF_GAME_PATH = "game_path";
+
+    // GeneralsX @feature Android port 04/10/2026 Two games behind one icon: Command & Conquer
+    // Generals and its expansion Zero Hour. The launcher shows one of them at a time; Play, the
+    // game folder and its checks follow the selected game, everything on the other pages is
+    // shared. Each game has its own folder (PREF_GAME_PATH stays Zero Hour's, so existing
+    // installs keep theirs), its own user-data folder (saves, maps, Options.ini) and its own
+    // engine libraries, libmain*.so for Zero Hour and libgenerals*.so for Generals.
+    static final String PREF_GAME = "game";
+    static final String GAME_ZERO_HOUR = "zh";
+    static final String GAME_GENERALS = "generals";
+    static final String PREF_GENERALS_GAME_PATH = "game_path_generals";
+
+    static String getSelectedGame(android.content.Context ctx) {
+        String game = ctx.getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(PREF_GAME, GAME_ZERO_HOUR);
+        return GAME_GENERALS.equals(game) ? GAME_GENERALS : GAME_ZERO_HOUR;
+    }
+
+    static boolean isGeneralsSelected(android.content.Context ctx) {
+        return GAME_GENERALS.equals(getSelectedGame(ctx));
+    }
+
+    static void setSelectedGame(android.content.Context ctx, String game) {
+        ctx.getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+            .putString(PREF_GAME, GAME_GENERALS.equals(game) ? GAME_GENERALS : GAME_ZERO_HOUR)
+            .apply();
+    }
+
+    private static String gamePathPref(String game) {
+        return GAME_GENERALS.equals(game) ? PREF_GENERALS_GAME_PATH : PREF_GAME_PATH;
+    }
+
+    // The selected game's user-data folder, laid out as on Windows (Documents): the leaf names
+    // SDL3Main.cpp gives the engine through GENERALSX_USERDATA_DIR.
+    static File userDataDir(android.content.Context ctx) {
+        if (isGeneralsSelected(ctx)) {
+            return new File(Environment.getExternalStorageDirectory(),
+                "Generals/Command and Conquer Generals Data");
+        }
+        return DataPackInstaller.userDataDir();
+    }
+
+    // The engine library base names (System.loadLibrary) of the selected game: 30 Hz first, 60 Hz second.
+    static String[] engineLibraries(android.content.Context ctx) {
+        return isGeneralsSelected(ctx)
+            ? new String[] { "generals", "generals60" }
+            : new String[] { "main", "main60" };
+    }
 
     // GeneralsX @feature Android port 15/09/2026 Simulation tick rate.
     //
@@ -120,10 +172,16 @@ public class SetupActivity extends Activity {
     // since it's outside the app's private/package-scoped directories) so a
     // fresh install can recover it automatically instead of re-prompting.
     private static final String EXTERNAL_MARKER_NAME = ".generalszh_gamepath.txt";
+    private static final String GENERALS_EXTERNAL_MARKER_NAME = ".generals_gamepath.txt";
 
     // Marker files SDL3Main.cpp / GeneralsZHActivity check for on launch —
     // must match GameEngine/CMake's GeneralsMD/Code/Main/SDL3Main.cpp exactly.
     private static final String[] REQUIRED_GAME_FILES = { "INIZH.big", "INI.big" };
+    // GeneralsX @feature Android port 04/10/2026 The original game: its own INI.big, and no
+    // INIZH.big -- the engine mounts every archive in the folder, so a Zero Hour folder would
+    // turn the base game into a broken mix of the two.
+    private static final String GENERALS_REQUIRED_FILE = "INI.big";
+    private static final String ZERO_HOUR_ONLY_FILE = "INIZH.big";
 
     private TextView statusText;
 
@@ -275,7 +333,8 @@ public class SetupActivity extends Activity {
         // navigation bar below clears the gesture handle.
         InsetUtil.applySafeInsets(shell);
 
-        appBarTitle = UiKit.appBar(shell, getString(R.string.setup_title),
+        appBarTitle = UiKit.appBar(shell, getString(isGeneralsSelected(this)
+                ? R.string.setup_title_generals : R.string.setup_title),
             getString(R.string.nav_tab_home),
             R.drawable.ic_gzh_doc, getString(R.string.setup_button_view_logs), this::onViewLogs);
 
@@ -387,6 +446,7 @@ public class SetupActivity extends Activity {
                 buildLanguageSection(page);
                 buildUiScaleSection(page);
                 buildInterfaceScaleSection(page);
+                buildMouseModeSection(page);
                 break;
             case TAB_TOOLS:
                 buildLogsSection(page);
@@ -429,6 +489,36 @@ public class SetupActivity extends Activity {
     // ------------------------------------------------------------ Home page
 
     private void buildHomeSection(LinearLayout page) {
+        // GeneralsX @feature Android port 04/10/2026 Which game this page is about. Play, the game
+        // folder and its checks below follow it; the other pages are shared by both games.
+        final boolean generals = isGeneralsSelected(this);
+        LinearLayout game = UiKit.card(page);
+        UiKit.sectionHeader(game, R.drawable.ic_gzh_play, getString(R.string.setup_card_game), false);
+        CharSequence[] games = new CharSequence[] {
+            getString(R.string.setup_game_generals),
+            getString(R.string.setup_game_zero_hour)
+        };
+        UiKit.segmented(game, games, generals ? 0 : 1, index -> {
+            String picked = index == 0 ? GAME_GENERALS : GAME_ZERO_HOUR;
+            if (picked.equals(getSelectedGame(this))) {
+                return;
+            }
+            setSelectedGame(this, picked);
+            // The app bar names the game, so rebuild the whole shell rather than only this page.
+            buildUi();
+        });
+        UiKit.supporting(game, getString(R.string.setup_game_desc));
+
+        // GeneralsX @feature Android port 05/10/2026 Skip the logos and intro movies (owner's
+        // request): the engine's own -nologo, passed by GeneralsZHActivity.getArguments(), for
+        // both games. Whatever plays in their place -- EA logo, intro, sizzle, or a mod's or a
+        // repack's replacement of those movies -- is skipped, straight to loading.
+        SwitchCompat skipIntro = UiKit.switchRow(game,
+            getString(R.string.setup_switch_skip_intro), getString(R.string.setup_switch_skip_intro_desc));
+        skipIntro.setChecked(isSkipIntroEnabled(this));
+        skipIntro.setOnCheckedChangeListener((button, checked) ->
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_SKIP_INTRO, checked).apply());
+
         // The one thing this app exists to do, as the first thing on it.
         UiKit.button(page, UiKit.BTN_PRIMARY, R.drawable.ic_gzh_play,
             getString(R.string.setup_button_launch_game), this::onLaunchGame);
@@ -442,11 +532,14 @@ public class SetupActivity extends Activity {
 
         UiKit.button(folder, UiKit.BTN_TONAL, R.drawable.ic_gzh_folder,
             getString(R.string.setup_button_select_game_folder), this::onSelectGameFolder);
-        UiKit.button(folder, UiKit.BTN_TONAL, R.drawable.ic_gzh_folder,
-            getString(R.string.setup_button_select_base_generals), this::onSelectBaseGeneralsFolder);
+        // Zero Hour only: the base game's archives are the base game itself.
+        if (!generals) {
+            UiKit.button(folder, UiKit.BTN_TONAL, R.drawable.ic_gzh_folder,
+                getString(R.string.setup_button_select_base_generals), this::onSelectBaseGeneralsFolder);
+        }
         UiKit.button(folder, UiKit.BTN_DANGER, R.drawable.ic_gzh_broom,
             getString(R.string.setup_button_clear_game_folder), this::onClearGameFolder);
-        if (getBaseGeneralsPath() != null) {
+        if (!generals && getBaseGeneralsPath() != null) {
             UiKit.button(folder, UiKit.BTN_DANGER, R.drawable.ic_gzh_broom,
                 getString(R.string.setup_button_clear_base_generals), this::onClearBaseGeneralsFolder);
         }
@@ -674,6 +767,77 @@ public class SetupActivity extends Activity {
             () -> startActivity(new Intent(this, ReplayCheckActivity.class)));
     }
 
+    // GeneralsX @feature Android port 05/10/2026 Issue #39: a pointer instead of native touch,
+    // off by default. A marker file in the app's own files dir, read natively at start
+    // (GXMouseMode.h), so it holds before any game folder is chosen and for both games.
+    static final String MOUSE_MODE_MARKER = "mouse_mode";
+
+    private void buildMouseModeSection(LinearLayout root) {
+        LinearLayout content = UiKit.card(root);
+        UiKit.sectionHeader(content, R.drawable.ic_gzh_sliders,
+            getString(R.string.setup_card_controls), false);
+        SwitchCompat mouse = UiKit.switchRow(content,
+            getString(R.string.setup_switch_mouse_mode), getString(R.string.setup_switch_mouse_mode_desc));
+        final File marker = new File(getFilesDir(), MOUSE_MODE_MARKER);
+        mouse.setChecked(marker.isFile());
+
+        // GeneralsX @feature Android port 05/10/2026 Cursor size for the touchpad pointer, 50-200%,
+        // shown only while the mode is on. Kept as the marker's content (GXMouseCursorPercent).
+        final LinearLayout cursorBox = new LinearLayout(this);
+        cursorBox.setOrientation(LinearLayout.VERTICAL);
+        final TextView cursorLabel = UiKit.body(cursorBox, null);
+        final Slider cursorSlider = new Slider(this);
+        cursorSlider.setValueFrom(50f);
+        cursorSlider.setValueTo(200f);
+        cursorSlider.setStepSize(10f);
+        cursorSlider.setValue(readMouseCursorPercent(marker));
+        cursorSlider.setLabelBehavior(LabelFormatter.LABEL_GONE);
+        cursorSlider.setTrackActiveTintList(UiKit.tint(this, R.color.gzh_primary));
+        cursorSlider.setTrackInactiveTintList(UiKit.tint(this, R.color.gzh_surface_container_highest));
+        cursorSlider.setThumbTintList(UiKit.tint(this, R.color.gzh_primary));
+        cursorSlider.setHaloTintList(UiKit.tint(this, R.color.gzh_ripple_primary));
+        cursorLabel.setText(getString(R.string.setup_cursor_size_label, (int) cursorSlider.getValue()));
+        cursorSlider.addOnChangeListener((slider, value, fromUser) -> {
+            cursorLabel.setText(getString(R.string.setup_cursor_size_label, (int) value));
+            if (fromUser) {
+                writeMouseMode(marker, true, (int) value);
+            }
+        });
+        cursorBox.addView(cursorSlider, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        content.addView(cursorBox, new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        cursorBox.setVisibility(marker.isFile() ? android.view.View.VISIBLE : android.view.View.GONE);
+
+        mouse.setOnCheckedChangeListener((button, checked) -> {
+            writeMouseMode(marker, checked, (int) cursorSlider.getValue());
+            cursorBox.setVisibility(checked ? android.view.View.VISIBLE : android.view.View.GONE);
+        });
+        UiKit.helpText(content, getString(R.string.setup_mouse_mode_help));
+    }
+
+    private static int readMouseCursorPercent(File marker) {
+        try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.FileReader(marker))) {
+            String line = r.readLine();
+            int value = line == null ? 100 : Integer.parseInt(line.trim());
+            return Math.max(50, Math.min(200, Math.round(value / 10f) * 10));
+        } catch (java.io.IOException | NumberFormatException e) {
+            return 100;
+        }
+    }
+
+    private static void writeMouseMode(File marker, boolean enabled, int cursorPercent) {
+        if (!enabled) {
+            marker.delete();
+            return;
+        }
+        try (java.io.FileWriter w = new java.io.FileWriter(marker, false)) {
+            w.write(Integer.toString(cursorPercent));
+        } catch (java.io.IOException e) {
+            android.util.Log.w("SetupActivity", "could not write the mouse mode marker", e);
+        }
+    }
+
     // GeneralsX @feature Android port 13/07/2026 GitHub issue #4: in-app
     // language override for this launcher (Setup/Log Viewer/folder browser)
     // -- see LocaleHelper for why it's a manual attachBaseContext() wrap
@@ -702,6 +866,9 @@ public class SetupActivity extends Activity {
 
         languagePackButton = UiKit.button(content, UiKit.BTN_OUTLINE, R.drawable.ic_gzh_download,
             getString(R.string.setup_button_download_langpack), this::onDownloadLanguagePack);
+        // GeneralsX @feature Android port 05/10/2026 The packs are made from Zero Hour's text, which
+        // holds all but 20 of the base game's 2806 labels (the engine takes those 20 from the
+        // game's own table), so they serve Generals too.
 
         UiKit.helpText(content, getString(R.string.setup_language_help));
     }
@@ -1393,8 +1560,8 @@ public class SetupActivity extends Activity {
         });
 
         UiKit.supporting(content, getString(current == SIM_HZ_CROSSPLAY
-            ? R.string.setup_sim_rate_60_desc
-            : R.string.setup_sim_rate_30_desc));
+            ? (isGeneralsSelected(this) ? R.string.setup_sim_rate_60_desc_generals : R.string.setup_sim_rate_60_desc)
+            : (isGeneralsSelected(this) ? R.string.setup_sim_rate_30_desc_generals : R.string.setup_sim_rate_30_desc)));
         UiKit.helpText(content, getString(R.string.setup_sim_rate_help));
     }
 
@@ -1975,19 +2142,19 @@ public class SetupActivity extends Activity {
     // parentheses so a tester can match it up with exact instructions from
     // an issue reporter/maintainer.
     private static final String[] DIAGNOSTIC_MARKERS = {
-        "gx_trace.txt", "gx_perf.txt", "gx_audio_trace.txt", "gx_net_trace.txt",
+        "gx_trace.txt", "gx_perf.txt", "gx_gles_gputimer.txt", "gx_audio_trace.txt", "gx_net_trace.txt",
         "gx_touch_debug.txt", "dxvk_hud.txt",
         "dxvk_validation.txt", "dxvk_verbose_log.txt"
     };
     private static final int[] DIAGNOSTIC_TITLES = {
-        R.string.setup_switch_gx_trace, R.string.setup_switch_gx_perf,
+        R.string.setup_switch_gx_trace, R.string.setup_switch_gx_perf, R.string.setup_switch_gpu_timer,
         R.string.setup_switch_gx_audio_trace, R.string.setup_switch_gx_net_trace,
         R.string.setup_switch_touch_debug,
         R.string.setup_switch_dxvk_hud, R.string.setup_switch_dxvk_validation,
         R.string.setup_switch_dxvk_verbose_log
     };
     private static final int[] DIAGNOSTIC_DESCRIPTIONS = {
-        R.string.setup_switch_gx_trace_desc, R.string.setup_switch_gx_perf_desc,
+        R.string.setup_switch_gx_trace_desc, R.string.setup_switch_gx_perf_desc, R.string.setup_switch_gpu_timer_desc,
         R.string.setup_switch_gx_audio_trace_desc, R.string.setup_switch_gx_net_trace_desc,
         R.string.setup_switch_touch_debug_desc,
         R.string.setup_switch_dxvk_hud_desc, R.string.setup_switch_dxvk_validation_desc,
@@ -2135,7 +2302,7 @@ public class SetupActivity extends Activity {
     // 18/07/2026. This still pointed at the old internal <filesDir>/.local/share/... copy, so the
     // text size was saved where the game never looks and every value looked the same in game.
     private File optionsIniFile() {
-        return new File(DataPackInstaller.userDataDir(), "Options.ini");
+        return new File(userDataDir(this), "Options.ini");
     }
 
     private File defaultOptionsIniFile() {
@@ -2243,12 +2410,12 @@ public class SetupActivity extends Activity {
             sb.append(getString(R.string.setup_status_folder_not_set));
         } else {
             File dir = new File(path);
-            boolean valid = isValidGameFolder(dir);
+            boolean valid = isValidGameFolder(dir, getSelectedGame(this));
             sb.append(getString(R.string.setup_status_folder_line, path));
             int statusStart = sb.length();
             int statusColorRes;
             if (!valid) {
-                sb.append(getString(R.string.setup_status_folder_invalid));
+                sb.append(invalidFolderMessage(dir));
                 statusColorRes = R.color.gzh_status_error;
             } else {
                 java.util.List<String> issues = findGameFolderIntegrityIssues(dir);
@@ -2269,7 +2436,7 @@ public class SetupActivity extends Activity {
             // Only worth a line when it is actually set: an absent optional
             // setting does not need to occupy space on the screen.
             final String basePath = getBaseGeneralsPath();
-            if (basePath != null) {
+            if (basePath != null && !isGeneralsSelected(this)) {
                 sb.append(getString(R.string.setup_status_base_generals_line, basePath));
             }
         }
@@ -2634,38 +2801,63 @@ public class SetupActivity extends Activity {
     // Public + static so GeneralsZHActivity uses the exact same recovery
     // logic instead of its own copy that only ever checked SharedPreferences.
     static String getSavedGamePath(android.content.Context ctx) {
+        return getSavedGamePath(ctx, getSelectedGame(ctx));
+    }
+
+    static String getSavedGamePath(android.content.Context ctx, String game) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String path = prefs.getString(PREF_GAME_PATH, null);
+        String key = gamePathPref(game);
+        String path = prefs.getString(key, null);
         if (path != null) {
             return path;
         }
 
         // Not in this install's private prefs (fresh install after an
         // uninstall, most likely) -- check the external marker left by a
-        // previous install and self-heal by restoring it into prefs.
-        String recovered = readExternalMarker();
-        if (recovered != null && isValidGameFolder(new File(recovered))) {
-            prefs.edit().putString(PREF_GAME_PATH, recovered).apply();
-            File nativeMarker = new File(ctx.getFilesDir(), "gamedata_path.txt");
-            try (java.io.FileWriter w = new java.io.FileWriter(nativeMarker, false)) {
-                w.write(recovered);
-                w.write("\n");
-            } catch (java.io.IOException e) {
-                // Not fatal: native code just won't see the recovered path
-                // until the user re-saves it once via Setup.
-            }
+        // previous install and self-heal by restoring it into prefs. The
+        // native marker is written on launch (writeNativeGameMarker()).
+        String recovered = readExternalMarker(game);
+        if (recovered != null && isValidGameFolder(new File(recovered), game)) {
+            prefs.edit().putString(key, recovered).apply();
             return recovered;
+        }
+
+        // GeneralsX @feature Android port 04/10/2026 Someone who already pointed Zero Hour at
+        // their base Generals archives has, by definition, a Generals folder: offer it.
+        if (GAME_GENERALS.equals(game)) {
+            String base = prefs.getString(PREF_BASE_GENERALS_PATH, null);
+            if (base != null && isValidGameFolder(new File(base), game)) {
+                prefs.edit().putString(key, base).apply();
+                return base;
+            }
         }
         return null;
     }
 
-    private static File externalMarkerFile() {
-        File root = Environment.getExternalStorageDirectory();
-        return root != null ? new File(root, EXTERNAL_MARKER_NAME) : null;
+    // GeneralsX @feature Android port 04/10/2026 The folder SDL3Main.cpp enters is a plain-text
+    // marker (native code has no SharedPreferences access). With two games it has to name the one
+    // about to start, so it is written right before the engine loads rather than when a folder is
+    // picked.
+    static boolean writeNativeGameMarker(android.content.Context ctx, String path) {
+        File marker = new File(ctx.getFilesDir(), "gamedata_path.txt");
+        try (java.io.FileWriter w = new java.io.FileWriter(marker, false)) {
+            w.write(path);
+            w.write("\n");
+            return true;
+        } catch (java.io.IOException e) {
+            android.util.Log.w("SetupActivity", "could not write the game folder marker", e);
+            return false;
+        }
     }
 
-    private static String readExternalMarker() {
-        File marker = externalMarkerFile();
+    private static File externalMarkerFile(String game) {
+        File root = Environment.getExternalStorageDirectory();
+        String name = GAME_GENERALS.equals(game) ? GENERALS_EXTERNAL_MARKER_NAME : EXTERNAL_MARKER_NAME;
+        return root != null ? new File(root, name) : null;
+    }
+
+    private static String readExternalMarker(String game) {
+        File marker = externalMarkerFile(game);
         if (marker == null || !marker.isFile()) {
             return null;
         }
@@ -2677,9 +2869,56 @@ public class SetupActivity extends Activity {
         }
     }
 
-    static boolean isValidGameFolder(File dir) {
+    // GeneralsX @feature Android port 04/10/2026 What is wrong with a folder that is not a game
+    // folder, for the game it was picked for.
+    private String invalidFolderMessage(File dir) {
+        if (!isGeneralsSelected(this)) {
+            return getString(R.string.setup_status_folder_invalid);
+        }
+        if (dir != null && new File(dir, ZERO_HOUR_ONLY_FILE).exists()) {
+            return getString(R.string.setup_status_folder_is_zero_hour);
+        }
+        return getString(R.string.setup_status_folder_invalid_generals);
+    }
+
+    // The only game folder within three levels below dir, or null when there is none or more than
+    // one (then the player has to choose). Bounded, because shared storage behind FUSE is slow to list.
+    static File findGameFolderBelow(File dir, String game) {
+        java.util.ArrayDeque<File> queue = new java.util.ArrayDeque<>();
+        java.util.ArrayDeque<Integer> depths = new java.util.ArrayDeque<>();
+        queue.add(dir);
+        depths.add(0);
+        File found = null;
+        int listed = 0;
+        while (!queue.isEmpty() && listed < 300) {
+            File d = queue.poll();
+            int depth = depths.poll();
+            File[] children = d.listFiles(File::isDirectory);
+            listed++;
+            if (children == null) {
+                continue;
+            }
+            for (File c : children) {
+                if (isValidGameFolder(c, game)) {
+                    if (found != null) {
+                        return null;
+                    }
+                    found = c;
+                } else if (depth + 1 < 3 && !c.getName().startsWith(".")) {
+                    queue.add(c);
+                    depths.add(depth + 1);
+                }
+            }
+        }
+        return found;
+    }
+
+    static boolean isValidGameFolder(File dir, String game) {
         if (dir == null || !dir.isDirectory()) {
             return false;
+        }
+        if (GAME_GENERALS.equals(game)) {
+            return new File(dir, GENERALS_REQUIRED_FILE).exists() && !new File(dir, ZERO_HOUR_ONLY_FILE).exists();
         }
         for (String name : REQUIRED_GAME_FILES) {
             if (new File(dir, name).exists()) {
@@ -2722,6 +2961,10 @@ public class SetupActivity extends Activity {
     // [4-byte offset, big-endian][4-byte size, big-endian][null-terminated
     // backslash-separated path].
     private static final String BIG_CRITICAL_ENTRY = "data\\ini\\default\\weather.ini";
+    // GeneralsX @bugfix Android port 04/10/2026 Weather.ini is Zero Hour's: the original Generals has
+    // no weather settings at all, so every complete Generals copy failed the check above. GameData.ini
+    // is the first INI the base game's engine loads, and every release of it has one.
+    private static final String GENERALS_BIG_CRITICAL_ENTRY = "data\\ini\\gamedata.ini";
 
     // GeneralsX @bugfix Android port game-folder-integrity-check 08/30/2026
     // Some retail/Deluxe layouts don't put the base Generals archives (incl.
@@ -2740,6 +2983,7 @@ public class SetupActivity extends Activity {
     private java.util.List<String> findGameFolderIntegrityIssues(File dir) {
         java.util.List<String> issues = new java.util.ArrayList<>();
         m_lastCheckWantedBaseGenerals = false;
+        final boolean generalsFolder = isGeneralsSelected(this);
         if (dir == null || !dir.isDirectory()) {
             return issues;
         }
@@ -2792,7 +3036,7 @@ public class SetupActivity extends Activity {
         if (!iniArchives.isEmpty()) {
             boolean found = false;
             for (File f : iniArchives) {
-                if (bigArchiveHasEntry(f, BIG_CRITICAL_ENTRY)) {
+                if (bigArchiveHasEntry(f, generalsFolder ? GENERALS_BIG_CRITICAL_ENTRY : BIG_CRITICAL_ENTRY)) {
                     found = true;
                     break;
                 }
@@ -2832,8 +3076,10 @@ public class SetupActivity extends Activity {
         // A folder chosen as the base-Generals location supplies these instead, so
         // do not go on demanding them here -- the warning would be permanent and
         // wrong for exactly the people who already did the right thing.
+        // GeneralsX @feature Android port 04/10/2026 For Generals itself these archives are its own:
+        // nothing elsewhere can stand in for them.
         final String basePath = getBaseGeneralsPath();
-        final boolean baseFolderCovers =
+        final boolean baseFolderCovers = !generalsFolder &&
             basePath != null && missingBaseGeneralsArchives(new File(basePath)).isEmpty();
 
         StringBuilder missing = new StringBuilder();
@@ -2844,7 +3090,9 @@ public class SetupActivity extends Activity {
                 }
             }
         }
-        if (missing.length() > 0) {
+        if (missing.length() > 0 && generalsFolder) {
+            issues.add(getString(R.string.setup_folder_issue_generals_incomplete, missing.toString()));
+        } else if (missing.length() > 0) {
             issues.add(getString(R.string.setup_folder_issue_no_base_game, missing.toString()));
             m_lastCheckWantedBaseGenerals = true;
         }
@@ -3123,10 +3371,21 @@ public class SetupActivity extends Activity {
         if (requestCode == 1001 && resultCode == Activity.RESULT_OK && data != null) {
             String path = data.getStringExtra(FolderPickerActivity.EXTRA_SELECTED_PATH);
             if (path != null) {
+                // GeneralsX @feature Android port 04/10/2026 A common mistake (4PDA report): picking the
+                // folder the archive was unpacked INTO, while the game sits one or two folders down.
+                // If exactly one folder below the pick is a game folder, take that one.
+                if (!isValidGameFolder(new File(path), getSelectedGame(this))) {
+                    File inside = findGameFolderBelow(new File(path), getSelectedGame(this));
+                    if (inside != null) {
+                        path = inside.getAbsolutePath();
+                        Toast.makeText(this, getString(R.string.setup_toast_folder_found_inside, path),
+                            Toast.LENGTH_LONG).show();
+                    }
+                }
                 saveGamePath(path);
                 refreshStatus();
                 File dir = new File(path);
-                boolean valid = isValidGameFolder(dir);
+                boolean valid = isValidGameFolder(dir, getSelectedGame(this));
                 // GeneralsX @feature Android port game-folder-integrity-check
                 // 07/09/2026 - a Toast auto-dismisses in a couple of seconds
                 // and is easy to miss entirely; a real problem here means
@@ -3136,7 +3395,7 @@ public class SetupActivity extends Activity {
                 // covers "I want to re-check the status later" without
                 // re-triggering the dialog every time the screen redraws.
                 if (!valid) {
-                    showFolderProblemDialog(getString(R.string.setup_status_folder_invalid).trim());
+                    showFolderProblemDialog(invalidFolderMessage(dir).trim());
                 } else {
                     java.util.List<String> issues = findGameFolderIntegrityIssues(dir);
                     if (!issues.isEmpty()) {
@@ -3177,19 +3436,17 @@ public class SetupActivity extends Activity {
     }
 
     private void saveGamePath(String path) {
+        final String game = getSelectedGame(this);
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-            .putString(PREF_GAME_PATH, path)
+            .putString(gamePathPref(game), path)
             .apply();
         // GeneralsZHActivity/SDL3Main.cpp read this plain-text marker on the
         // NEXT launch (native code has no Android SharedPreferences access).
-        File marker = new File(getFilesDir(), "gamedata_path.txt");
-        try (java.io.FileWriter w = new java.io.FileWriter(marker, false)) {
-            w.write(path);
-            w.write("\n");
-        } catch (java.io.IOException e) {
-            Toast.makeText(this, getString(R.string.setup_toast_marker_save_failed, e.getMessage()), Toast.LENGTH_LONG).show();
+        // GeneralsZHActivity rewrites it for whichever game is started.
+        if (!writeNativeGameMarker(this, path)) {
+            Toast.makeText(this, getString(R.string.setup_toast_marker_save_failed, path), Toast.LENGTH_LONG).show();
         }
-        File externalMarker = externalMarkerFile();
+        File externalMarker = externalMarkerFile(game);
         if (externalMarker != null) {
             try (java.io.FileWriter w = new java.io.FileWriter(externalMarker, false)) {
                 w.write(path);
@@ -3328,10 +3585,11 @@ public class SetupActivity extends Activity {
     }
 
     private void onClearGameFolder() {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().remove(PREF_GAME_PATH).apply();
+        final String game = getSelectedGame(this);
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().remove(gamePathPref(game)).apply();
         new File(getFilesDir(), "gamedata_path.txt").delete();
         new File(getFilesDir(), "game_language.cfg").delete();
-        File externalMarker = externalMarkerFile();
+        File externalMarker = externalMarkerFile(game);
         if (externalMarker != null) {
             externalMarker.delete();
         }
@@ -3361,6 +3619,9 @@ public class SetupActivity extends Activity {
     private boolean pendingLaunchAfterRotation = false;
 
     private void onLaunchGame() {
+        // GeneralsX @feature Android port 04/10/2026 The text-language marker is checked against
+        // the data of the game about to start, which may not be the one it was last written for.
+        applyGameLanguageOverride();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             startActivity(new Intent(this, GeneralsZHActivity.class));
             return;

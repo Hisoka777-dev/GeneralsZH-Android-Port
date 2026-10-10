@@ -248,11 +248,15 @@ static const GXEnglishDefault s_gxEnglishDefaults[] =
 {
 	{ "GUI:CustomMission",     L"CUSTOM MISSION" },
 	{ "GX:ForceAttack",        L"Force Attack" },
-	{ "GX:ToolTipForceAttack", L"Attack the next target you tap, even your own units or empty ground" },
+	{ "GX:ToolTipForceAttack", L"Attack whatever you tap, even your own units or empty ground, until you press this again" },
 	{ "GX:BuilderPageMore",        L"More Orders" },
-	{ "GX:ToolTipBuilderPageMore", L"Show this builder's orders, such as waypoints" },
-	{ "GX:BuilderPageBack",        L"Structures" },
-	{ "GX:ToolTipBuilderPageBack", L"Back to the list of structures" },
+	{ "GX:ToolTipBuilderPageMore", L"Show more orders: force attack, waypoints, scatter, formation" },
+	{ "GX:BuilderPageBack",        L"Back" },
+	{ "GX:ToolTipBuilderPageBack", L"Back to this unit's own buttons" },
+	{ "GX:Scatter",                L"Scatter" },
+	{ "GX:ToolTipScatter",         L"The selected units spread out from their centre, away from artillery and bombs" },
+	{ "GX:Formation",              L"Formation" },
+	{ "GX:ToolTipFormation",       L"The selected units keep their places and move together at the speed of the slowest. Press again to break the formation" },
 	// GeneralsOnline buttons the original menus do not have (score screen, player info).
 	{ "GX:ViewMatchOnline",    L"VIEW MATCH ONLINE" },
 	{ "GX:Logout",             L"LOGOUT" },
@@ -466,19 +470,28 @@ void GameTextManager::init()
 	qsort( m_stringLUT, m_textCount, sizeof(StringLookUp), compareLUT  );
 
 	// GeneralsX @bugfix BenderAI 22/05/2026 Load fallback CSF instance when a mod provides an incomplete table.
-	if ( format == CSF_FILE )
+	// GeneralsX @feature Android port 05/10/2026 And under a language pack (.str), the game's own
+	// table: the packs are made from Zero Hour's text, which holds all but 20 of the base game's
+	// 2806 labels, so on Generals those 20 come from its own generals.csf instead of "MISSING".
+	AsciiString fallbackCsfFile = csfFile;
+	Int fallbackInstance = 1;
+	if ( format == STRING_FILE )
+	{
+		fallbackCsfFile.format( g_csfFile, GetRegistryLanguage().str() );
+		fallbackInstance = 0;
+	}
 	{
 		Int fallbackCount = 0;
 		LanguageID originalLanguage = m_language;
 
-		if ( getCSFInfo(csfFile.str(), fallbackCount, m_language, 1) && fallbackCount > 0 )
+		if ( getCSFInfo(fallbackCsfFile.str(), fallbackCount, m_language, fallbackInstance) && fallbackCount > 0 )
 		{
 			m_fallbackStringInfo = NEW StringInfo[fallbackCount];
 
 			if ( m_fallbackStringInfo != nullptr )
 			{
 				Int fallbackMaxLabelLen = m_maxLabelLen;
-				if ( parseCSF(csfFile.str(), m_fallbackStringInfo, fallbackCount, fallbackMaxLabelLen, 1) )
+				if ( parseCSF(fallbackCsfFile.str(), m_fallbackStringInfo, fallbackCount, fallbackMaxLabelLen, fallbackInstance) )
 				{
 					m_fallbackTextCount = fallbackCount;
 					m_maxLabelLen = max(m_maxLabelLen, fallbackMaxLabelLen);

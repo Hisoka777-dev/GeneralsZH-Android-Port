@@ -95,6 +95,8 @@ static FunctionLexicon::TableEntry gameWinSystemTable[] =
 
 	{ NAMEKEY_INVALID, "MOTDSystem",                         (void*)MOTDSystem },
 	{ NAMEKEY_INVALID, "MainMenuSystem",                     (void*)MainMenuSystem },
+	// GeneralsX @feature Android port 04/10/2026 The touch control-group panel, as in Zero Hour.
+	{ NAMEKEY_INVALID, "GroupPanelSystem",                   (void*)GroupPanelSystem },
 	{ NAMEKEY_INVALID, "OptionsMenuSystem",                  (void*)OptionsMenuSystem },
 	{ NAMEKEY_INVALID, "SinglePlayerMenuSystem",             (void*)SinglePlayerMenuSystem },
 	{ NAMEKEY_INVALID, "QuitMenuSystem",                     (void*)QuitMenuSystem },
@@ -239,6 +241,7 @@ static FunctionLexicon::TableEntry winLayoutInitTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuInit",                  (void*)MainMenuInit },
+	{ NAMEKEY_INVALID, "GroupPanelInit",                (void*)GroupPanelInit },
 	{ NAMEKEY_INVALID, "OptionsMenuInit",               (void*)OptionsMenuInit },
 	{ NAMEKEY_INVALID, "SaveLoadMenuInit",              (void*)SaveLoadMenuInit },
 	{ NAMEKEY_INVALID, "SaveLoadMenuFullScreenInit",    (void*)SaveLoadMenuFullScreenInit },
@@ -290,6 +293,7 @@ static FunctionLexicon::TableEntry winLayoutUpdateTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuUpdate",                  (void*)MainMenuUpdate },
+	{ NAMEKEY_INVALID, "GroupPanelUpdate",                (void*)GroupPanelUpdate },
 	{ NAMEKEY_INVALID, "OptionsMenuUpdate",               (void*)OptionsMenuUpdate },
 	{ NAMEKEY_INVALID, "SinglePlayerMenuUpdate",          (void*)SinglePlayerMenuUpdate },
 	{ NAMEKEY_INVALID, "MapSelectMenuUpdate",             (void*)MapSelectMenuUpdate },
@@ -329,6 +333,7 @@ static FunctionLexicon::TableEntry winLayoutShutdownTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuShutdown",                  (void*)MainMenuShutdown },
+	{ NAMEKEY_INVALID, "GroupPanelShutdown",                (void*)GroupPanelShutdown },
 	{ NAMEKEY_INVALID, "OptionsMenuShutdown",               (void*)OptionsMenuShutdown },
 	{ NAMEKEY_INVALID, "SaveLoadMenuShutdown",              (void*)SaveLoadMenuShutdown },
 	{ NAMEKEY_INVALID, "PopupCommunicatorShutdown",         (void*)PopupCommunicatorShutdown },
@@ -375,6 +380,37 @@ FunctionLexicon *TheFunctionLexicon = nullptr;  ///< the function dictionary
 	* components we might want to add to the table, such as generating
 	* a key based off the name supplied in the table for faster access */
 //-------------------------------------------------------------------------------------------------
+// GeneralsX @bugfix Android port 24/09/2026 GUI functions this port has and the
+// GeneralsOnline client does not. See FunctionLexicon::gxKeyPortOnlyEntries().
+static const char *const GX_PORT_ONLY_FUNCTIONS[] =
+{
+	"ExtrasMenuSystem", "ExtrasMenuInput", "ExtrasMenuInit", "ExtrasMenuUpdate", "ExtrasMenuShutdown",
+	"GroupPanelSystem", "GroupPanelInit", "GroupPanelUpdate", "GroupPanelShutdown",
+	"W3DGeneralsXCreditDraw",
+};
+
+static Bool gxIsPortOnlyFunction( const char *name )
+{
+	for (const char *portOnly : GX_PORT_ONLY_FUNCTIONS)
+		if (strcmp(name, portOnly) == 0)
+			return TRUE;
+	return FALSE;
+}
+
+// Placeholder key for a port-only entry until it is keyed: never handed out by the
+// generator, and not NAMEKEY_INVALID, which would end the table for keyToFunc().
+static const NameKeyType GX_UNKEYED = NAMEKEY_MAX;
+
+//-------------------------------------------------------------------------------------------------
+void FunctionLexicon::gxKeyPortOnlyEntries()
+{
+	m_gxPortOnlyKeyed = TRUE;
+	for (Int i = 0; i < MAX_FUNCTION_TABLES; ++i)
+		for (TableEntry *entry = m_tables[ i ]; entry && entry->name; ++entry)
+			if (entry->key == GX_UNKEYED)
+				entry->key = TheNameKeyGenerator->nameToKey( entry->name );
+}
+
 void FunctionLexicon::loadTable( TableEntry *table,
 																 TableIndex tableIndex )
 {
@@ -389,7 +425,10 @@ void FunctionLexicon::loadTable( TableEntry *table,
 	{
 
 		// assign key from name key based on name provided in table
-		entry->key = TheNameKeyGenerator->nameToKey( entry->name );
+		if (!m_gxPortOnlyKeyed && gxIsPortOnlyFunction( entry->name ))
+			entry->key = GX_UNKEYED;
+		else
+			entry->key = TheNameKeyGenerator->nameToKey( entry->name );
 
 		// next table entry please
 		entry++;
@@ -510,6 +549,8 @@ FunctionLexicon::FunctionLexicon()
 	// empty the tables
 	for( i = 0; i < MAX_FUNCTION_TABLES; i++ )
 		m_tables[ i ] = nullptr;
+
+	m_gxPortOnlyKeyed = FALSE;
 
 }
 

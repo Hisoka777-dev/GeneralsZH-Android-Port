@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer Generals(tm)
+**	Command & Conquer Generals / Generals Zero Hour(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -254,6 +254,8 @@ public:
 
 	// Finds the top-level window at the mouse position that matches the required and forbidden status masks.
 	virtual GameWindow* findWindowUnderMouse(GameWindow*& toolTipWindow, const ICoord2D* mousePos, unsigned int requiredStatusMask, unsigned int forbiddenStatusMask);
+	/// pick the window mouse input at mousePos belongs to, once no captor or grab window is in play
+	GameWindow* findInputTargetWindow(const ICoord2D* mousePos, GameWindow*& toolTipWindow);
 	static bool isMouseWithinWindow(GameWindow* window, const ICoord2D* mousePos, unsigned int requiredStatusMask, unsigned int forbiddenStatusMask);
 
 	virtual Bool isEnabled( GameWindow *win );  ///< is window or parents enabled
@@ -278,6 +280,15 @@ public:
 	virtual GameWindow *winGetCapture();  ///< current mouse capture settings
 
 	virtual Int winSetModal( GameWindow *window );  ///< put at top of modal stack
+	// GeneralsX @feature Android port 05/10/2026 Is a modal window (dialog, message box) up? Read by
+	// the touchpad mode, which lets a finger press such windows directly (SDL3GameEngine.cpp).
+	Bool winHasModal() const { return m_modalHead != nullptr; }
+	// GeneralsX @bugfix Android port 05/10/2026 A top-level window that only shows something and
+	// never takes the pointer: hit tests look through it to what is underneath. The control bar's
+	// description popup is one -- grown by the interface size, it came to cover the money counter,
+	// so hovering the counter showed the popup, the popup then had the pointer, the counter lost
+	// it and the popup closed, over and over (owner's report: it flickers).
+	void winSetHitPassthrough( GameWindow *window ) { m_hitPassthrough = window; }
 	virtual Int winUnsetModal( GameWindow *window );  /**< take window off modal stack, if window is
 																										not at top of stack and error will occur */
 
@@ -323,6 +334,16 @@ public:
 
 	virtual GameWindow *getWindowUnderCursor( Int x, Int y, Bool ignoreEnabled = FALSE );	///< find the top window at the given coordinates
 
+	// GeneralsX @bugfix Android port 07/09/2026 getWindowUnderCursor() is NOT the
+	// same question winProcessMouseEvent() asks when it decides where a click
+	// goes: it skips the WIN_STATUS_NO_INPUT filter and the non-ABOVE fallback
+	// passes, so it both reports windows that can never take input and misses
+	// windows that can. Touch input needs the real answer -- "would a press here
+	// be routed to a widget instead of to the battlefield?" -- to know whether a
+	// finger position means anything in the world (see InGameUI::setTouchAimPoint).
+	// This shares winProcessMouseEvent's own selection code so the two cannot drift.
+	virtual GameWindow *getWindowForInputAt( Int x, Int y );	///< the window a mouse press at (x,y) would actually be routed to, or NULL for none
+
 	//---------------------------------------------------------------------------
 	/////////////////////////////////////////////////////////////////////////////
 	//---------------------------------------------------------------------------
@@ -341,17 +362,17 @@ protected:
 	// comment: "If this window is not the top of the modal stack an error
 	// will occur"). That means the two existing destroy-time modal checks
 	// (which only ever compared against m_modalHead->window) silently did
-	// nothing for a window buried lower in the stack -- e.g. a popup going
-	// modal, then a message box going modal on top of it, then the popup's
-	// window being destroyed while it's no longer at the head. The resulting
-	// dangling ModalWindow::window entry gets prioritized for ALL future
-	// mouse routing once it resurfaces to the head (see winProcessMouseEvent's
-	// "if (m_modalHead) window = m_modalHead->window->winPointInChild(...)"),
-	// which is exactly the symptom a device log showed on the GeneralsMD
-	// build: every single frame's mouse-position message dispatched to one
-	// specific already-destroyed window regardless of actual cursor
-	// position. This walks the whole stack and splices out every entry for
-	// `window`, not just the head.
+	// nothing for a window buried lower in the stack -- e.g. PopupHostGame.wnd
+	// going modal, then a GSMessageBoxOk() going modal on top of it, then
+	// PopupHostGame's window being destroyed while it's no longer at the
+	// head. The resulting dangling ModalWindow::window entry gets prioritized
+	// for ALL future mouse routing once it resurfaces to the head (see
+	// winProcessMouseEvent's "if (m_modalHead) window =
+	// m_modalHead->window->winPointInChild(...)"), which is exactly the
+	// symptom a device log showed: every single frame's mouse-position
+	// message dispatched to one specific already-destroyed window regardless
+	// of actual cursor position. This walks the whole stack and splices out
+	// every entry for `window`, not just the head.
 	void purgeModalStackEntry( GameWindow *window );
 
 	Int drawWindow( GameWindow *window );  ///< draw this window
@@ -367,6 +388,7 @@ protected:
 	GameWindow *m_mouseCaptor;			// window that captured mouse
 	GameWindow *m_keyboardFocus;		// window that has input focus
 	ModalWindow *m_modalHead;			// top of windows in the modal stack
+	GameWindow *m_hitPassthrough;	// see winSetHitPassthrough()
 	GameWindow *m_grabWindow;			// window that grabbed the last down event
 	GameWindow *m_loneWindow;			// Set if we just opened a Lone Window
 	GameWindowList m_tabList;			// we have to register a tab list to make a tab list.

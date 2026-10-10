@@ -6,6 +6,16 @@
     <!-- SetupActivity: title / fallback -->
     <string name="setup_window_title">إعدادات GeneralsZH</string>
     <string name="setup_title">Command &amp; Conquer Generals: Zero Hour</string>
+    <string name="setup_title_generals">Command &amp; Conquer Generals</string>
+    <string name="setup_card_game">اللعبة</string>
+    <string name="setup_game_generals">Generals</string>
+    <string name="setup_game_zero_hour">Zero Hour</string>
+    <string name="setup_game_desc">لكل لعبة مجلدها وحفظها وخرائطها وملف إعداداتها. إعدادات الرسومات والواجهة مشتركة بين اللعبتين.</string>
+    <string name="setup_status_folder_invalid_generals">الحالة: هذا المجلد لا يحتوي على INI.big — اختر مجلد Generals الأصلية.\n</string>
+    <string name="setup_status_folder_is_zero_hour">الحالة: هذا مجلد Zero Hour (يحتوي على INIZH.big). تحتاج Generals إلى مجلد اللعبة الأصلية.\n</string>
+    <string name="setup_sim_rate_30_desc_generals">30 هرتز هو معدل اللعبة الأصلية. تُعرض عليه الإعادات المسجّلة على الحاسوب.</string>
+    <string name="setup_sim_rate_60_desc_generals">60 هرتز تحسب المحاكاة ضعف المرات لحركة أنعم. يتضاعف العمل في الثانية، لذا قد يعمل الجهاز الأبطأ بأقل من السرعة الكاملة.</string>
+    <string name="setup_folder_issue_generals_incomplete">بيانات لعبة Generals مفقودة:%1$s</string>
     <string name="setup_subtitle">إعدادات أندرويد</string>
     <string name="setup_fallback_warning">فشل تحميل واجهة الإعدادات العادية (%1$s). يتم عرض واجهة بديلة بسيطة حتى تتمكن من الوصول إلى السجلات/مجلد اللعبة.</string>
 
@@ -101,6 +111,8 @@
     <string name="setup_switch_touch_debug_desc">يرسم حالة طبقة اللمس فوق اللعبة: الإيماءة الحالية، وموضع إصبعك، والموضع الذي يعتقد المحرك أن المؤشر فيه، ونقطة ارتكاز تمرير الكاميرا. فعّل هذا للإبلاغ عن مشكلات التحكم — خريطة تتحرك من تلقاء نفسها، أو مبنى شبحي في المكان الخطأ، أو قدرة تستهدف مكانًا لم تلمسه. (gx_touch_debug.txt)</string>
     <string name="setup_switch_gx_perf">ملخص الأداء</string>
     <string name="setup_switch_gx_perf_desc">يضيف سطرًا قصيرًا كل ثانية يوضح أين يُصرف وقت الإطار (الرادار، الصوت، الشبكة، منطق اللعبة، العرض). آمن تركه مفعّلاً طوال جلسة اللعب — فعّله لتقارير معدل الإطارات/التباطؤ. (gx_perf.txt)</string>
+    <string name="setup_switch_gpu_timer">قياس وقت معالج الرسومات</string>
+    <string name="setup_switch_gpu_timer_desc">يقيس الوقت الذي يقضيه معالج الرسومات في كل إطار ويضيفه إلى ملخص الأداء، لمعرفة ما إذا كان الحد هو معالج الرسومات أم المعالج. لـ OpenGL ES فقط. بعض تعريفات Mali تتعطل معه، فأبقه مطفأً ما لم يُطلب منك. (gx_gles_gputimer.txt)</string>
     <string name="setup_switch_gx_audio_trace">سجل الصوت</string>
     <string name="setup_switch_gx_audio_trace_desc">يسجل ما يقوم به نظام الصوت: مستوى مخازن الموسيقى والحوار، وصوت المقاطع السينمائية، وكل مصدر يبدأ أو يتوقف. فعّل هذا إذا طُلب منك سجل صوت بعد الإبلاغ عن صوت مفقود أو متقطع أو صامت. ‎(gx_audio_trace.txt)</string>
     <string name="setup_button_download_langpack">تنزيل حزمة اللغة</string>
@@ -160,9 +172,7 @@
     <!-- LogViewerActivity -->
     <string name="logviewer_title">السجلات</string>
     <string name="logviewer_button_clear">مسح السجلات</string>
-    <string name="logviewer_button_copy">نسخ</string>
     <string name="logviewer_button_share">مشاركة</string>
-    <string name="logviewer_toast_copied">تم النسخ إلى الحافظة.</string>
     <string name="logviewer_section_crash_log">=== crash.log (معالج الأعطال الأصلي، التخزين الداخلي) ===\n</string>
     <string name="logviewer_crash_log_absent">(غير موجود — لم يُسجَّل أي عطل أصلي منذ التثبيت، أو أن التطبيق لم يُشغَّل قط بعد تحميل المكتبة)</string>
     <string name="logviewer_section_stderr_log">=== generals-stderr.log (سجل المحرك، التخزين الخارجي) ===\n</string>
@@ -345,4 +355,13 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">تطبيق حجم الواجهة</string>
     <string name="setup_interface_scale_help">يكبّر واجهة اللعبة دون تعديل ملفاتها: يكبر شريط التحكم مع الرادار صعودًا من الحافة السفلية، وتكبر قدرات الجنرال والدردشة ورسائل الأحداث وقائمة اللاعبين وقائمة اللعب مع الحفظ/التحميل والخيارات وأزرار القائمة الرئيسية من أماكنها. لا يخرج شيء من الشاشة: يكبر كل جزء بقدر ما يتسع فقط، لذا على الهاتف العريض يصبح شريط التحكم أطول بدلًا من أعرض، وتصبح ساحة المعركة فوقه أقصر. يعمل مع حجم نص القائمة. يسري عند تشغيل اللعبة في المرة القادمة.</string>
+    <!-- GeneralsX @feature Android port 04/10/2026 Game folder found below the pick -->
+    <string name="setup_toast_folder_found_inside">اللعبة موجودة في مجلد فرعي؛ تم اختيار: %1$s</string>
+    <string name="setup_card_controls">التحكم</string>
+    <string name="setup_switch_mouse_mode">الفأرة ولوحة اللمس</string>
+    <string name="setup_switch_mouse_mode_desc">مؤشر بدلًا من اللمس في المكان المطلوب: الفأرة الموصولة تعمل كما على الحاسوب، ومن دونها يحرّك إصبعك المؤشر مثل لوحة لمس الحاسوب المحمول. عند الإيقاف: تُلعب اللعبة باللمس مباشرة.</string>
+    <string name="setup_mouse_mode_help">لوحة اللمس: حرّك إصبعًا لتحريك المؤشر. نقرة = نقر أيسر، نقرتان = نقر مزدوج، نقرة ثم لمس وسحب = مربع تحديد. نقرة بإصبعين = نقر أيمن. إصبعان = تمرير الخريطة، القرص = التكبير. يسري عند بدء اللعبة في المرة القادمة. يبقى خيار اللعبة \"إعداد الفأرة البديل\" هو ما يحدد عمل الزرين الأيسر والأيمن. في القوائم والردهة ومربعات الحوار يضغط الإصبع مباشرة كالمعتاد.</string>
+    <string name="setup_cursor_size_label">حجم المؤشر: %1$d%%</string>
+    <string name="setup_switch_skip_intro">تخطي مقاطع المقدمة</string>
+    <string name="setup_switch_skip_intro_desc">تُتخطى شعارات EA والمقدمة والمقاطع الأخرى قبل القائمة، وتبدأ اللعبة التحميل مباشرة. للعبتين، ومع التعديلات أيضًا.</string>
 </resources>

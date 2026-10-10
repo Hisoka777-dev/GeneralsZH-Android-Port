@@ -6,6 +6,16 @@
     <!-- SetupActivity: title / fallback -->
     <string name="setup_window_title">Настройки GeneralsZH</string>
     <string name="setup_title">Command &amp; Conquer Generals: Zero Hour</string>
+    <string name="setup_title_generals">Command &amp; Conquer Generals</string>
+    <string name="setup_card_game">Игра</string>
+    <string name="setup_game_generals">Generals</string>
+    <string name="setup_game_zero_hour">Zero Hour</string>
+    <string name="setup_game_desc">У каждой игры своя папка, сохранения, карты и файл настроек. Настройки графики и интерфейса общие.</string>
+    <string name="setup_status_folder_invalid_generals">Статус: в этой папке НЕТ INI.big — выберите папку оригинальной Generals.\n</string>
+    <string name="setup_status_folder_is_zero_hour">Статус: это папка Zero Hour (в ней есть INIZH.big). Для Generals нужна папка оригинальной игры.\n</string>
+    <string name="setup_sim_rate_30_desc_generals">30 Гц — частота оригинальной игры. На ней воспроизводятся реплеи, записанные на ПК.</string>
+    <string name="setup_sim_rate_60_desc_generals">60 Гц обновляют симуляцию вдвое чаще, движение плавнее. Нагрузка в секунду удваивается, поэтому на слабом устройстве игра может идти медленнее.</string>
+    <string name="setup_folder_issue_generals_incomplete">Отсутствуют данные игры Generals:%1$s</string>
     <string name="setup_subtitle">Настройки Android</string>
     <string name="setup_fallback_warning">Обычный интерфейс настроек не загрузился (%1$s). Показан упрощённый вариант, чтобы вы всё равно могли открыть логи или папку с игрой.</string>
 
@@ -111,6 +121,8 @@
     <string name="setup_switch_touch_debug_desc">Рисует поверх игры состояние сенсорного слоя: текущий жест, где палец, где движок считает указатель, и якорь прокрутки камеры. Включайте, когда сообщаете о проблемах управления — карта уезжает сама, призрак здания не на том месте, способность целится туда, куда вы не нажимали. (gx_touch_debug.txt)</string>
     <string name="setup_switch_gx_perf">Сводка производительности</string>
     <string name="setup_switch_gx_perf_desc">Добавляет одну короткую строку в секунду о том, куда уходит время кадра (радар, звук, сеть, игровая логика, рендер). Можно оставить включённым на всю сессию — включайте для отчётов о низком FPS/подтормаживаниях. (gx_perf.txt)</string>
+    <string name="setup_switch_gpu_timer">Замер времени видеокарты</string>
+    <string name="setup_switch_gpu_timer_desc">Измеряет, сколько видеокарта тратит на каждый кадр, и добавляет это в сводку производительности — чтобы понять, что тормозит: видеокарта или процессор. Только для OpenGL ES. На некоторых драйверах Mali вызывает вылет, поэтому включайте, только если вас об этом попросили. (gx_gles_gputimer.txt)</string>
     <string name="setup_switch_gx_audio_trace">Журнал звука</string>
     <string name="setup_switch_gx_audio_trace_desc">Записывает, что делает звуковая система: заполнение буферов музыки и речи, звук роликов и каждый запуск и остановку источника. Включите, если после жалобы на пропавший, прерывистый или тихий звук у вас попросят журнал звука. (gx_audio_trace.txt)</string>
     <string name="setup_button_download_langpack">Скачать языковой пакет</string>
@@ -171,9 +183,7 @@
     <!-- LogViewerActivity -->
     <string name="logviewer_title">Логи</string>
     <string name="logviewer_button_clear">Очистить логи</string>
-    <string name="logviewer_button_copy">Копировать</string>
     <string name="logviewer_button_share">Поделиться</string>
-    <string name="logviewer_toast_copied">Скопировано в буфер обмена.</string>
     <string name="logviewer_section_crash_log">=== crash.log (обработчик краша, внутреннее хранилище) ===\n</string>
     <string name="logviewer_crash_log_absent">(отсутствует — крашей движка с момента установки не было, либо приложение ни разу не запускалось дальше загрузки библиотеки)</string>
     <string name="logviewer_section_stderr_log">=== generals-stderr.log (лог движка, внешнее хранилище) ===\n</string>
@@ -347,4 +357,13 @@
     <string name="setup_interface_scale_label">%1$d%%</string>
     <string name="setup_button_apply_interface_scale">Применить размер интерфейса</string>
     <string name="setup_interface_scale_help">Увеличивает интерфейс игры без правки её файлов: нижняя панель с картой растёт вверх от края экрана, а панель способностей генерала, чат, сообщения о событиях, список игроков, игровое меню с сохранением и настройками и кнопки главного меню растут от того места, где находятся. За экран ничего не уходит: каждая часть увеличивается только насколько помещается, поэтому на широком телефоне нижняя панель становится выше, а не шире, и поле боя над ней — ниже. Работает вместе с «Размером текста меню». Вступает в силу при следующем запуске игры.</string>
+    <!-- GeneralsX @feature Android port 04/10/2026 Game folder found below the pick -->
+    <string name="setup_toast_folder_found_inside">Игра нашлась во вложенной папке, выбрана она: %1$s</string>
+    <string name="setup_card_controls">Управление</string>
+    <string name="setup_switch_mouse_mode">Мышь и тачпад</string>
+    <string name="setup_switch_mouse_mode_desc">Курсор вместо касаний: подключённая мышь работает как на ПК, а без неё палец двигает курсор, как тачпад ноутбука. Выключено: игра управляется касаниями напрямую.</string>
+    <string name="setup_mouse_mode_help">Тачпад: ведите пальцем — курсор движется. Тап — левый клик, два тапа — двойной клик, тап, а затем коснуться и вести — рамка выделения. Тап двумя пальцами — правый клик. Два пальца — прокрутка карты, щипок — масштаб. Включается со следующего запуска игры. Что делают левая и правая кнопки, по-прежнему решает пункт игры «Альтернативное управление мышью». В меню, лобби и диалогах палец нажимает напрямую, как обычно.</string>
+    <string name="setup_cursor_size_label">Размер курсора: %1$d%%</string>
+    <string name="setup_switch_skip_intro">Пропускать заставки</string>
+    <string name="setup_switch_skip_intro_desc">Логотипы EA, вступительное видео и другие ролики перед меню не показываются — игра сразу переходит к загрузке. Для обеих игр, и с модами тоже.</string>
 </resources>

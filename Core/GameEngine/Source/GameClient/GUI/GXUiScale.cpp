@@ -449,14 +449,43 @@ static void analyzeLayout( const Rule *rule, const char *layoutFile, const char 
 						}
 				if( slots.size() >= 2 )
 				{
-					const Real k = t.ky;
+					// GeneralsX @tweak Android port 05/10/2026 One slot size for both games. The base game's
+					// slots are 56 high of 600 where Zero Hour's are 41, so at the same interface size its
+					// power button came out a third larger again (owner's photo: "the size of the map").
+					// Slots taller than Zero Hour's are brought down to its height; the stack still rests
+					// on the bar at the right edge, where the bottom slot's corner was.
+					const Real zeroHourSlotH = 41.0f / 600.0f;
+					const Real slotH = slots[ 0 ].r[ 3 ] - slots[ 0 ].r[ 1 ];
+					const Real k = t.ky * ( slotH > zeroHourSlotH ? zeroHourSlotH / slotH : 1.0f );
+					const Real bottom0 = slots[ 0 ].r[ 3 ] * t.ky + t.addY;
+					const Real right0 = slots[ 0 ].r[ 2 ] * t.kx + t.addX;
 					const Real pitch = ( slots[ 0 ].r[ 1 ] - slots[ 1 ].r[ 1 ] ) * k;
-					const Real colW = ( slots[ 0 ].r[ 2 ] - slots[ 0 ].r[ 0 ] ) * t.kx + 0.004f;
-					const Real top0 = slots[ 0 ].r[ 1 ] * k + t.addY;
+					const Real colW = ( slots[ 0 ].r[ 2 ] - slots[ 0 ].r[ 0 ] ) * k + 0.004f;
+					const Real top0 = bottom0 - slotH * k;
 					const Int perCol = pitch > 0.0f ? 1 + (Int)floorf( ( top0 - 0.01f ) / pitch ) : (Int)slots.size();
-					const Real c0x = ( slots[ 0 ].r[ 0 ] + slots[ 0 ].r[ 2 ] ) * 0.5f * t.kx + t.addX;
-					const Real c0y = ( slots[ 0 ].r[ 1 ] + slots[ 0 ].r[ 3 ] ) * 0.5f * k + t.addY;
+					const Real c0x = right0 - ( slots[ 0 ].r[ 2 ] - slots[ 0 ].r[ 0 ] ) * 0.5f * k;
+					const Real c0y = bottom0 - slotH * 0.5f * k;
 					p.offset.assign( p.scaled.size() * 5, 0.0f );
+					// GeneralsX @bugfix Android port 05/10/2026 The places are filled in the order the
+					// game fills the slots -- ButtonParent1 first -- not in the file's top-to-bottom
+					// order. Zero Hour's slot 1 is the bottom one, so nothing changes there; the base
+					// game's is the TOP one, and its first power (owner's photo: the spy drone) landed in
+					// the wrapped column out in the battlefield. Now the first power rests on the bar in
+					// both games, and further ones stack upward.
+					std::vector<Slot> byNumber = slots;
+					for( size_t a = 0; a < byNumber.size(); ++a )
+						for( size_t b = a + 1; b < byNumber.size(); ++b )
+						{
+							const Int na = atoi( rectWins[ byNumber[ a ].index ]->name.c_str() + prefixLen );
+							const Int nb = atoi( rectWins[ byNumber[ b ].index ]->name.c_str() + prefixLen );
+							if( nb < na )
+							{
+								const Slot tmp = byNumber[ a ];
+								byNumber[ a ] = byNumber[ b ];
+								byNumber[ b ] = tmp;
+							}
+						}
+					slots = byNumber;
 					Int columns = 1;
 					for( size_t n = 0; n < slots.size(); ++n )
 					{
